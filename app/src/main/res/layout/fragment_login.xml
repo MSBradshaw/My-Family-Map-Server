@@ -4,24 +4,133 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-
-    <EditText
-        android:id="@+id/username_field"
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/username_field"/>
+        android:columnCount="2">
 
-    <EditText
-        android:id="@+id/password_field"
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/host_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/host_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/port_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/port_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/username_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/username_field"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/password_text"/>
+
+        <EditText
+            android:inputType="textPassword"
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/password_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/firstname_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/firstname_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/lastname_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/lastname_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            style="?android:listSeparatorTextViewStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/email_text"/>
+
+        <EditText
+            style="?android:listSeparatorTextViewStyle"
+            android:id="@+id/email_field"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </GridLayout>
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <RadioButton android:id="@+id/male"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/male"
+            android:onClick="onRadioButtonClicked"/>
+
+        <RadioButton android:id="@+id/female"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/female"
+            android:onClick="onRadioButtonClicked"/>
+
+    </RadioGroup>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/password_field"/>
+        android:gravity="center">
 
-    <Button
-        android:id="@+id/submit_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Submit"/>
+        <Button
+            android:id="@+id/submit_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Submit"/>
 
+        <Button
+            android:id="@+id/register_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Register"/>
+
+    </LinearLayout>
 
 </LinearLayout>
