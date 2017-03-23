@@ -29,11 +29,12 @@ public class LoginFragment extends Fragment {
     private EditText mHostIn;
     private EditText mFirstNameIn;
     private EditText mLastNameIn;
+    private EditText mEmailIn;
     private Button mLoginButton;
     private Button mRegisterButton;
     private RadioGroup mGenderButton;
-    private String mPort;
-    private String mHost;
+    private String mPort = "";
+    private String mHost = "";
 
 
     @Override
@@ -58,27 +59,115 @@ public class LoginFragment extends Fragment {
     }
     private void firstNameInitializer(View view){
         mFirstNameIn = (EditText) view.findViewById(R.id.firstname_field);
-        mUser.setFirstname(mFirstNameIn.getText().toString());
+        mFirstNameIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mUser.setFirstname(mFirstNameIn.getText().toString());
+                String temp = null;
+            }
+        });
     }
     private void lastNameInitializer(View view){
         mLastNameIn = (EditText) view.findViewById(R.id.lastname_field);
-        mUser.setLastname(mLastNameIn.getText().toString());
+        mLastNameIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mUser.setLastname(mLastNameIn.getText().toString());
+                String temp = null;
+            }
+        });
     }
     private void usernameInitializer(View view){
         mUsernameIn = (EditText) view.findViewById(R.id.username_field);
-        mUser.setUsername(mUsernameIn.getText().toString());
+        mUsernameIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mUser.setUsername(mUsernameIn.getText().toString());
+                String temp = null;
+            }
+        });
     }
     private void passwordInitializer(View view){
         mPasswordIn = (EditText) view.findViewById(R.id.password_field);
-        mUser.setPassword(mPasswordIn.getText().toString());
+        mPasswordIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mUser.setPassword(mPasswordIn.getText().toString());
+                String temp = null;
+            }
+        });
+    }
+    private void emailInitializer(View view){
+        mEmailIn = (EditText) view.findViewById(R.id.email_field);
+        mEmailIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mUser.setEmail(mEmailIn.getText().toString());
+                String temp = null;
+            }
+        });
     }
     private void portInitializer(View view){
         mPortIn = (EditText) view.findViewById(R.id.port_field);
-        mPort = mPortIn.getText().toString();
+        mPortIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mPort = mPortIn.getText().toString();
+                String temp = null;
+            }
+        });
     }
     private void hostInitializer(View view){
         mHostIn = (EditText) view.findViewById(R.id.host_field);
-        mHost = mHostIn.getText().toString();
+        mHostIn.addTextChangedListener(new TextWatcher(){
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                mHost = mHostIn.getText().toString();
+                String temp = null;
+            }
+        });
     }
     private void genderButtonInitializer(View view){
         mGenderButton = (RadioGroup)view.findViewById(R.id.sex_button);
@@ -110,22 +199,61 @@ public class LoginFragment extends Fragment {
         mLoginButton.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
-                makeToast("Clicked Button Login");
+                checkLoginInfo();
             }
         });
 
+    }
+    private void checkLoginInfo(){
+        if(voidOrEmptyString(mPort)){
+            makeToast("Please enter a port");
+        }else if(voidOrEmptyString(mHost)){
+            makeToast("Please enter a host");
+        }else if(voidOrEmptyString(mUser.getUsername())){
+            makeToast("Please enter a username");
+        }else if(voidOrEmptyString(mUser.getPassword())){
+            makeToast("Please enter a password");
+        }else{
+            makeToast("Advanced Search");
+            //run an advanced check using the database and queries
+        }
     }
     private void registerInitializer(View view){
         mRegisterButton = (Button) view.findViewById(R.id.register_info);
         mRegisterButton.setOnClickListener(new Button.OnClickListener(){
             @Override
             public void onClick(View v) {
-                makeToast("Clicked Button Register");
+                checkRegisteringInfo();
             }
         });
     }
+    public void checkRegisteringInfo(){
+
+        if(voidOrEmptyString(mPort)){
+            makeToast("Please enter a port");
+        }else if(voidOrEmptyString(mHost)){
+            makeToast("Please enter a host");
+        }else if(voidOrEmptyString(mUser.getUsername())){
+            makeToast("Please enter a username");
+        }else if(voidOrEmptyString(mUser.getPassword())){
+            makeToast("Please enter a password");
+        }else if(voidOrEmptyString(mUser.getFirstname())){
+            makeToast("Please enter a firstname");
+        }else if(voidOrEmptyString(mUser.getLastname())){
+            makeToast("Please enter a lastname");
+        }else if(voidOrEmptyString(mUser.getGender())){
+            makeToast("Sorry but you cannot be gender neutral");
+        }else if(voidOrEmptyString(mUser.getEmail())){
+            makeToast("Please enter an email");
+        }else {
+            makeToast("Register the user");
+        }
+    }
     private void makeToast(String message){
         Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+    }
+    private boolean voidOrEmptyString(String word){
+        return (word == null || word.equals(""));
     }
 }
 
