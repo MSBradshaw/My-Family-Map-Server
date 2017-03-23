@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.example.Model.User;
@@ -19,75 +21,111 @@ import com.example.Model.User;
  * Created by mbrad94 on 3/20/17.
  */
 
-public class LoginFragment extends Fragment{
+public class LoginFragment extends Fragment {
     private User mUser;
     private EditText mUsernameIn;
     private EditText mPasswordIn;
-    private Button mSubmitButton;
+    private EditText mPortIn;
+    private EditText mHostIn;
+    private EditText mFirstNameIn;
+    private EditText mLastNameIn;
+    private Button mLoginButton;
+    private Button mRegisterButton;
+    private RadioGroup mGenderButton;
+    private String mPort;
+    private String mHost;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mUser = new User();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View viewOfActivityMain = inflater.inflate(R.layout.fragment_login,container,false);
-        mUsernameIn = (EditText) viewOfActivityMain.findViewById(R.id.username_field);
-        mPasswordIn = (EditText) viewOfActivityMain.findViewById(R.id.password_field);
-        if(mUsernameIn == null || mPasswordIn == null){
-            return viewOfActivityMain;
-        }
-
-        mUsernameIn.addTextChangedListener(new TextWatcher() {
+        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        hostInitializer(view);
+        portInitializer(view);
+        usernameInitializer(view);
+        passwordInitializer(view);
+        firstNameInitializer(view);
+        lastNameInitializer(view);
+        genderButtonInitializer(view);
+        loginInitializer(view);
+        registerInitializer(view);
+        return view;
+    }
+    private void firstNameInitializer(View view){
+        mFirstNameIn = (EditText) view.findViewById(R.id.firstname_field);
+        mUser.setFirstname(mFirstNameIn.getText().toString());
+    }
+    private void lastNameInitializer(View view){
+        mLastNameIn = (EditText) view.findViewById(R.id.lastname_field);
+        mUser.setLastname(mLastNameIn.getText().toString());
+    }
+    private void usernameInitializer(View view){
+        mUsernameIn = (EditText) view.findViewById(R.id.username_field);
+        mUser.setUsername(mUsernameIn.getText().toString());
+    }
+    private void passwordInitializer(View view){
+        mPasswordIn = (EditText) view.findViewById(R.id.password_field);
+        mUser.setPassword(mPasswordIn.getText().toString());
+    }
+    private void portInitializer(View view){
+        mPortIn = (EditText) view.findViewById(R.id.port_field);
+        mPort = mPortIn.getText().toString();
+    }
+    private void hostInitializer(View view){
+        mHostIn = (EditText) view.findViewById(R.id.host_field);
+        mHost = mHostIn.getText().toString();
+    }
+    private void genderButtonInitializer(View view){
+        mGenderButton = (RadioGroup)view.findViewById(R.id.sex_button);
+        mGenderButton.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
             @Override
-            public void beforeTextChanged(
-                    CharSequence s, int start, int count, int after) {
-                // This space intentionally left blank
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                Integer checked = checkedId;
+                int manId = 2131427423;
+                //male = 2131427423
+                //female = 2131427424
+                RadioButton genderButton = (RadioButton) group.findViewById(checkedId);
+                if(null!=genderButton && checkedId > -1){
+                    if(checked.equals(2131427423)){
+                        mUser.setGender("m");
+                        makeToast("Man");
+                    }else{
+                        mUser.setGender("w");
+                        makeToast("Woman");
+                    }
+                }else{
+                    makeToast("You must be an man or a woman, not an apache attack helicopter");
+                }
+
             }
-
+        });
+    }
+    private void loginInitializer(View view){
+        mLoginButton = (Button) view.findViewById(R.id.submit_info);
+        mLoginButton.setOnClickListener(new Button.OnClickListener(){
             @Override
-            public void onTextChanged(
-                    CharSequence s, int start, int before, int count) {
-                mUser.setUsername(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // This one too
+            public void onClick(View v) {
+                makeToast("Clicked Button Login");
             }
         });
 
-        mPasswordIn.addTextChangedListener(new TextWatcher() {
+    }
+    private void registerInitializer(View view){
+        mRegisterButton = (Button) view.findViewById(R.id.register_info);
+        mRegisterButton.setOnClickListener(new Button.OnClickListener(){
             @Override
-            public void beforeTextChanged(
-                    CharSequence s, int start, int count, int after) {
-                // This space intentionally left blank
-            }
-
-            @Override
-            public void onTextChanged(
-                    CharSequence s, int start, int before, int count) {
-                mUser.setPassword(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // This one too
+            public void onClick(View v) {
+                makeToast("Clicked Button Register");
             }
         });
-
-        mSubmitButton = (Button) viewOfActivityMain.findViewById(R.id.submit_info);
-        mSubmitButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //checkAnswer(true);
-                System.out.println("Clicked");
-
-            }
-        });
-        mSubmitButton.setEnabled(false);
-
-        return viewOfActivityMain;
+    }
+    private void makeToast(String message){
+        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
     }
 }
+

@@ -13,12 +13,13 @@
             style="?android:listSeparatorTextViewStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/host_text"/>
+            android:hint="@string/host_text" />
 
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/host_field"
-            android:layout_width="wrap_content"
+            android:inputType="text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <TextView
@@ -30,7 +31,8 @@
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/port_field"
-            android:layout_width="wrap_content"
+            android:inputType="text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
         <TextView
@@ -42,7 +44,8 @@
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/username_field"
-            android:layout_width="wrap_content"
+            android:inputType="text"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
@@ -67,6 +70,7 @@
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/firstname_field"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -79,6 +83,7 @@
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/lastname_field"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -91,10 +96,13 @@
         <EditText
             style="?android:listSeparatorTextViewStyle"
             android:id="@+id/email_field"
+            android:inputType="text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
     </GridLayout>
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/sex_button"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -103,14 +111,12 @@
         <RadioButton android:id="@+id/male"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/male"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="@string/male"/>
 
         <RadioButton android:id="@+id/female"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/female"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="@string/female"/>
 
     </RadioGroup>
 

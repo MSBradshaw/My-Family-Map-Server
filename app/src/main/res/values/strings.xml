@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">Server</string>
-    <string name="username_text">Username:</string>
-    <string name="password_text">Password:</string>
+    <string name="username_text">Username: </string>
+    <string name="password_text">Password: </string>
     <string name="username_field">Enter your username</string>
     <string name="password_field">Enter your Password</string>
     <string name="port_field">Enter a port to connect to</string>
     <string name="host_field">Enter an ip to to connect to</string>
-    <string name="host_text">Server Host:</string>
-    <string name="port_text">Server Port:</string>
-    <string name="firstname_text">First Name:</string>
-    <string name="lastname_text">Last Name:</string>
-    <string name="email_text">Email:</string>
+    <string name="host_text">Server Host: </string>
+    <string name="port_text">Server Port: </string>
+    <string name="firstname_text">First Name: </string>
+    <string name="lastname_text">Last Name: </string>
+    <string name="email_text">Email: </string>
     <string name="empty_log_in">You must enter a username and password</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
