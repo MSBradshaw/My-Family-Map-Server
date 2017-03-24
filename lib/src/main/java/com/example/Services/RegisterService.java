@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.UUID;
 
 /**
  * Created by Michael on 3/1/2017.
@@ -46,6 +47,8 @@ public class RegisterService {
                 return errormessageStart + messageContent + errormessageEnd;
             }
             //send to the data base
+            //generate a personID for the User
+            U.setPersonID(generateRandomID());
             trans.U.addToUserTable(U);
             trans.P.addToPersonTable(userTopersonCoverter(U));
             trans.endTransaction(true);
@@ -55,6 +58,7 @@ public class RegisterService {
             FillService fill =  new FillService(U.getUsername());
             String output = fill.fill();
             A = trans.A.addToAuthorizationTable(createAuthObject(U.getUsername()));
+             trans.P.addToPersonTable(userTopersonCoverter(U));
             //end trans
             trans.endTransaction(true);
         }catch(DatabaseException e){
@@ -64,6 +68,7 @@ public class RegisterService {
             //return errormessageStart + e.errormessage + errormessageEnd;
         }
         //convert auth object back to json object and return it
+        A.setPersonID(U.getPersonID());
         String returnMe = authObjectTojson(A);
         return returnMe;
     }
@@ -146,5 +151,9 @@ public class RegisterService {
         }catch(DatabaseException e){
             System.out.println("You should never see this, register user endTransaction");
         }
+    }
+    public String generateRandomID(){
+        String uuid = UUID.randomUUID().toString();
+        return uuid;
     }
 }

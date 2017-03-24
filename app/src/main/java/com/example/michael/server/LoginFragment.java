@@ -16,6 +16,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.Model.Event;
 import com.example.Model.Person;
 import com.example.Model.ServerProxy;
 import com.example.Model.User;
@@ -51,6 +52,8 @@ public class LoginFragment extends Fragment {
     private String mHost = "";
     private ClientModel clientModel;
     private boolean badToastPopped;
+    private String userFirstName;
+    private String userLastName;
 
 
     @Override
@@ -70,6 +73,7 @@ public class LoginFragment extends Fragment {
         firstNameInitializer(view);
         lastNameInitializer(view);
         genderButtonInitializer(view);
+        emailInitializer(view);
         loginInitializer(view);
         registerInitializer(view);
         return view;
@@ -239,8 +243,6 @@ public class LoginFragment extends Fragment {
                 if(badToastPopped){
                     return;
                 }
-                SyncTask syncTask = new SyncTask();
-                syncTask.execute(new URL("http://localhost:8080/"));
             } catch (MalformedURLException e) {
                 makeToast("Exception was thrown");
             }
@@ -274,7 +276,18 @@ public class LoginFragment extends Fragment {
         }else if(voidOrEmptyString(mUser.getEmail())){
             makeToast("Please enter an email");
         }else {
-            makeToast("Register the user");
+            try {
+                RegisterTask registerTask = new RegisterTask();
+                registerTask.execute(new URL("http://localhost:8080/"));
+                //load the people
+                if(badToastPopped){
+                    return;
+                }
+                //syn the people's stuff
+
+            } catch (MalformedURLException e) {
+                makeToast("Exception was thrown");
+            }
         }
     }
     private void makeToast(String message){
@@ -283,7 +296,62 @@ public class LoginFragment extends Fragment {
     private boolean voidOrEmptyString(String word){
         return (word == null || word.equals(""));
     }
+    public class RegisterTask extends AsyncTask<URL, Integer, Long>{
+        private boolean invalidRegister = false;
+        String output = "";
+        protected Long doInBackground(URL... urls) {
+            long l = 0;
+            //what to do in the back ground
+            registerBackGroundTask();
+            return l;
+        }
+        protected void onProgressUpdate(Integer... progress) {
+        }
 
+        protected void onPostExecute(Long result) {
+            //if there is an error pop a toast here
+            if(invalidRegister){
+                makeToast("Failed to register: \n" + output);
+                badToastPopped = true;
+                return;
+            }else{
+                // makeToast("Logged In");
+            }
+            SyncTask syncTask = new SyncTask();
+            try {
+                syncTask.execute(new URL("http://localhost:8080/"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }
+        private void registerBackGroundTask(){
+            ServerProxy serverProxy = new ServerProxy();
+            try {
+                output = serverProxy.register(mUser);
+            } catch (IOException e) {
+                e.printStackTrace();
+                output = "Error using register server proxy";
+                invalidRegister = true;
+                return;
+            }
+            if(!checkForAuthToken(output)){
+                //bad
+                invalidRegister = true;
+            }else{
+                //good
+                //save the authToken
+                serverProxy.setAuthCode(extractAuthID(output));
+                String personID = extractPersonID(output);
+                //get the username and password
+                String personInfo = serverProxy.person(personID,serverProxy.getAuthCode());
+                setFirstName(personInfo);
+                setLastName(personInfo);
+                //load the info
+            }
+            //if string has an authtoken it was successfull if not, send toast
+        }
+
+    }
     public class LoginTask extends AsyncTask<URL, Integer, Long>{
         private boolean invalidLogin = false;
         String output = "";
@@ -301,8 +369,15 @@ public class LoginFragment extends Fragment {
             if(invalidLogin){
                 makeToast("Failed to login: \n" + output);
                 badToastPopped = true;
+                return;
             }else{
                // makeToast("Logged In");
+            }
+            SyncTask syncTask = new SyncTask();
+            try {
+                syncTask.execute(new URL("http://localhost:8080/"));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
             }
         }
         private void loginBackGroundTask(){
@@ -315,6 +390,11 @@ public class LoginFragment extends Fragment {
                 //good
                 //save the authToken
                 serverProxy.setAuthCode(extractAuthID(output));
+                //get the personID
+                String personID = extractPersonID(output);
+                String personInfo = serverProxy.person(personID,serverProxy.getAuthCode());
+                setFirstName(personInfo);
+                setLastName(personInfo);
                 //load the info
             }
             //if string has an authtoken it was successfull if not, send toast
@@ -341,12 +421,40 @@ public class LoginFragment extends Fragment {
                 makeToast("Failed to sync: \n" + output);
                 badToastPopped = true;
             } else {
-                makeToast("Sync Worked People Size: " + clientModel.getInstance().people.size());
+                //makeToast("Sync Worked\nPeople Size: " + clientModel.getInstance().people.size()
+                  //      + "Events Size: " + clientModel.getInstance().events.size());
+                makeToast("Firstname: " + userFirstName +
+                "\nLastname: " + userLastName);
             }
         }
         private void syncBackGroundTask(){
             ServerProxy serverProxy = new ServerProxy();
             output = serverProxy.person("",serverProxy.getAuthCode());
+            loadOutputPerson();
+            output = serverProxy.event("",serverProxy.getAuthCode());
+            loadOutputEvent();
+            //create function for loading all persons
+
+        }
+        private void loadOutputEvent(){
+            if(!output.contains("eventID")){
+                //bad
+                invalidSync = true;
+            }else{
+                //good
+                Event[] eventsTemp;
+                Gson gson = new Gson();
+                Person[] myarray;
+                eventsTemp = (Event[]) gson.fromJson(output, Event[].class);
+                if(eventsTemp != null && eventsTemp.length != 0){
+                    for(int i=0; i < eventsTemp.length ;i++){
+                        clientModel.getInstance().events.put(eventsTemp[i].getEventID()
+                                ,eventsTemp[i]);
+                    }
+                }
+            }
+        }
+        private void loadOutputPerson(){
             if(!output.contains("personID")){
                 //bad
                 invalidSync = true;
@@ -361,7 +469,6 @@ public class LoginFragment extends Fragment {
                     }
                 }
             }
-
         }
     }
     //return true if there is an authID
@@ -382,6 +489,38 @@ public class LoginFragment extends Fragment {
             s = m.group(1);
         }
         return s;
+    }
+    private String extractPersonID(String string){
+
+        Pattern MY_PATTERN = Pattern.compile("ID\":\"(.*)\"");
+        Matcher m = MY_PATTERN.matcher(string);
+        String s = "";
+        while (m.find()) {
+            s = m.group(1);
+        }
+        return s;
+    }
+    private void setFirstName(String string){
+        Pattern MY_PATTERN = Pattern.compile("firstname\":\"(.*)\",\"lastname");
+        Matcher m = MY_PATTERN.matcher(string);
+        String s = "";
+        while (m.find()) {
+            s = m.group(1);
+        }
+        if(!s.equals("")){
+            userFirstName = s;
+        }
+    }
+    private void setLastName(String string){
+        Pattern MY_PATTERN = Pattern.compile("lastname\":\"(.*)\",\"gen");
+        Matcher m = MY_PATTERN.matcher(string);
+        String s = "";
+        while (m.find()) {
+            s = m.group(1);
+        }
+        if(!s.equals("")){
+            userLastName = s;
+        }
     }
 }
 

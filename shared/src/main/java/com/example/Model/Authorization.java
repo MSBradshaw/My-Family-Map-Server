@@ -11,6 +11,13 @@ public class Authorization {
     public String authorizationCode;
     public String UserName;
     public String timeIssued;
+    public String personID;
+    public String getPersonID() {
+        return personID;
+    }
+    public void setPersonID(String personID) {
+        this.personID = personID;
+    }
     public String getAuthorizationCode(){
         return authorizationCode;
     }

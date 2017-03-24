@@ -70,6 +70,7 @@ public class LoginService {
             return errormessageStart + e.errormessage + errormessageEnd;
         }
         //convert the auth token to string to be returned
+        auth.setPersonID(user.getPersonID());
         String returnMe = authObjectTojson(auth);
         return returnMe;
     }

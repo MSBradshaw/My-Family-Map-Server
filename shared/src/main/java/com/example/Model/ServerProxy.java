@@ -181,6 +181,9 @@ public class ServerProxy {
      */
     public String person(String personID, String authID){
         Person person = new Person();
+        if(!personID.equals("")){
+            personID = "/" + personID;
+        }
         String inputUrl = "http://10.0.2.2:8080/person" + personID;
         return genericEventoPerson(inputUrl,authID);
     }
@@ -229,7 +232,7 @@ public class ServerProxy {
      */
     public String event(String eventId, String authID){
         Person person = new Person();
-        String inputUrl = "http://localhost:8080/event" + eventId;
+        String inputUrl = "http://10.0.2.2:8080/event" + eventId;
         return genericEventoPerson(inputUrl,authID);
     }
 

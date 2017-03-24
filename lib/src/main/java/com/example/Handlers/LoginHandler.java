@@ -30,6 +30,8 @@ public class LoginHandler extends HandlerParent implements HttpHandler {
             while (s.hasNext()) {
                 sb.append(s.next());
             }
+            String temp = sb.toString();
+            temp.length();
             LoginService loginService = new LoginService(sb.toString());
             String response = "";
             response = loginService.logIn();
