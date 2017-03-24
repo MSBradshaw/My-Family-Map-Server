@@ -17,6 +17,15 @@ import java.net.URL;
  *
  */
 public class ServerProxy {
+    public String getAuthCode() {
+        return authCode;
+    }
+
+    public void setAuthCode(String authCode) {
+        this.authCode = authCode;
+    }
+
+    private String authCode = "";
     /**
      * create json of the provided information and passes it to the server
      * returns true or false whether a new user was successfully added
@@ -29,7 +38,7 @@ public class ServerProxy {
     }
 
     public String login(User user){
-        return genericFunction(user,"http://localhost:8080/user/login");
+        return genericFunction(user,"http://10.0.2.2:8080/user/login");
     }
     public String genericFunction(Object user, String urlStr){
         try {

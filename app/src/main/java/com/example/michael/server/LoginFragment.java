@@ -1,6 +1,7 @@
 package com.example.michael.server;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +16,13 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.Model.ServerProxy;
 import com.example.Model.User;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by mbrad94 on 3/20/17.
@@ -214,8 +221,14 @@ public class LoginFragment extends Fragment {
         }else if(voidOrEmptyString(mUser.getPassword())){
             makeToast("Please enter a password");
         }else{
-            makeToast("Advanced Search");
-            //run an advanced check using the database and queries
+            try {
+                LoginTask loginTask = new LoginTask();
+
+                loginTask.execute(new URL("http://localhost:8080/"));
+                //run an advanced check using the database and queries
+            } catch (MalformedURLException e) {
+                makeToast("Exception was thrown");
+            }
         }
     }
     private void registerInitializer(View view){
@@ -254,6 +267,62 @@ public class LoginFragment extends Fragment {
     }
     private boolean voidOrEmptyString(String word){
         return (word == null || word.equals(""));
+    }
+
+    public class LoginTask extends AsyncTask<URL, Integer, Long>{
+        private boolean invalidLogin = false;
+        String output = "";
+        protected Long doInBackground(URL... urls) {
+            long l = 0;
+            //what to do in the back ground
+            loginBackGroundTask();
+            return l;
+        }
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Long result) {
+            //if there is an error pop a toast here
+            if(invalidLogin){
+                makeToast("Failed to login: \n" + output);
+            }else{
+                makeToast("Logged In");
+            }
+        }
+        private void loginBackGroundTask(){
+            ServerProxy serverProxy = new ServerProxy();
+            output = serverProxy.login(mUser);
+            if(!checkForAuthToken(output)){
+                //bad
+                invalidLogin = true;
+            }else{
+                //good
+                //save the authToken
+                serverProxy.setAuthCode(extractAuthID(output));
+                //load the info
+            }
+            //if string has an authtoken it was successfull if not, send toast
+        }
+
+        //return true if there is an authID
+        private boolean checkForAuthToken(String word){
+            String authString = "authorizationCode";
+            if(word == null || word.equals("")){
+                return false;
+            }
+            return word.contains(authString);
+        }
+        //returns the authID
+        private String extractAuthID(String string){
+
+            Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\"");
+            Matcher m = MY_PATTERN.matcher(string);
+            String s = "";
+            while (m.find()) {
+                s = m.group(1);
+            }
+            return s;
+        }
     }
 }
 

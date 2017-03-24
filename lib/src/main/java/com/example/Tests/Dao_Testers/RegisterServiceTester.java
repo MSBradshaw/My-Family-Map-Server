@@ -17,6 +17,8 @@ import com.example.Services.RegisterService;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.*;
@@ -342,6 +344,50 @@ public class RegisterServiceTester {
             fail(e.errormessage);
         }
 
+    }
+    private String extractAuthID(String string){
+
+        Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\"");
+        Matcher m = MY_PATTERN.matcher(string);
+        String s = "";
+        while (m.find()) {
+            s = m.group(1);
+            // s now contains "BAR"
+        }
+        return s;
+    }
+    @Test
+    public void regexTesting(){
+        String string = "{\n" +
+                "\t\"authorizationCode\":\"6f3f6934-459e-42b7-935c-60f238324abf\",\n" +
+                "\t\"UserName\":\"username\",\n" +
+                "\t\"timeIssued\":\"20170323_175725\"\n" +
+                "}";
+        String s = extractAuthID(string);
+        assertTrue(s.equals("6f3f6934-459e-42b7-935c-60f238324abf"));
+    }
+    private boolean checkForAuthToken(String word){
+        String authString = "authorizationCode";
+        if(word == null || word.equals("")){
+            return false;
+        }
+        return word.contains(authString);
+    }
+    @Test
+    public void checkForAuthTest(){
+        String string = "{\n" +
+                "\t\"authorizationCode\":\"6f3f6934-459e-42b7-935c-60f238324abf\",\n" +
+                "\t\"UserName\":\"username\",\n" +
+                "\t\"timeIssued\":\"20170323_175725\"\n" +
+                "}";
+        assertTrue(checkForAuthToken(string));
+    }
+    @Test
+    public void checkForNoAuthTest(){
+        String string = "{\n" +
+                "Mike Bradshaw"+
+                "}";
+        assertTrue(!checkForAuthToken(string));
     }
 }
 
