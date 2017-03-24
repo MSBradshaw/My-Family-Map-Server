@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.Model.ServerProxy;
 import com.example.Model.User;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -223,9 +224,8 @@ public class LoginFragment extends Fragment {
         }else{
             try {
                 LoginTask loginTask = new LoginTask();
-
                 loginTask.execute(new URL("http://localhost:8080/"));
-                //run an advanced check using the database and queries
+                //load the people
             } catch (MalformedURLException e) {
                 makeToast("Exception was thrown");
             }
@@ -304,25 +304,66 @@ public class LoginFragment extends Fragment {
             //if string has an authtoken it was successfull if not, send toast
         }
 
-        //return true if there is an authID
-        private boolean checkForAuthToken(String word){
-            String authString = "authorizationCode";
-            if(word == null || word.equals("")){
-                return false;
-            }
-            return word.contains(authString);
-        }
-        //returns the authID
-        private String extractAuthID(String string){
+    }
+    public class SyncTask extends AsyncTask<URL, Integer, Long> {
+        private boolean invalidRegister = false;
+        String output = "";
 
-            Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\"");
-            Matcher m = MY_PATTERN.matcher(string);
-            String s = "";
-            while (m.find()) {
-                s = m.group(1);
-            }
-            return s;
+        protected Long doInBackground(URL... urls) {
+            long l = 0;
+            //what to do in the back ground
+            registerBackGroundTask();
+            return l;
         }
+
+        protected void onProgressUpdate(Integer... progress) {
+        }
+
+        protected void onPostExecute(Long result) {
+            //if there is an error pop a toast here
+            if (invalidRegister) {
+                makeToast("Failed to login: \n" + output);
+            } else {
+                makeToast("Logged In");
+            }
+        }
+        private void registerBackGroundTask(){
+            ServerProxy serverProxy = new ServerProxy();
+            try{
+                output = serverProxy.register(mUser);
+
+            } catch (IOException e) {
+                makeToast("Error Registering");
+            }
+            if(!checkForAuthToken(output)){
+                //bad
+                invalidRegister = true;
+            }else{
+                //good
+                //save the authToken
+                serverProxy.setAuthCode(extractAuthID(output));
+                //load the info
+            }
+        }
+    }
+    //return true if there is an authID
+    private boolean checkForAuthToken(String word){
+        String authString = "authorizationCode";
+        if(word == null || word.equals("")){
+            return false;
+        }
+        return word.contains(authString);
+    }
+    //returns the authID
+    private String extractAuthID(String string){
+
+        Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\"");
+        Matcher m = MY_PATTERN.matcher(string);
+        String s = "";
+        while (m.find()) {
+            s = m.group(1);
+        }
+        return s;
     }
 }
 

@@ -34,7 +34,7 @@ public class ServerProxy {
      *
      */
     public String register(User user) throws IOException {
-        return genericFunction(user,"http://localhost:8080/user/register");
+        return genericFunction(user,"http://10.0.2.2:8080/user/register");
     }
 
     public String login(User user){

@@ -15,7 +15,7 @@ import javax.xml.crypto.Data;
  */
 public class EventDAO {
     private Connection conn;
-    private String getCreateEventTableString2 = "CREATE TABLE IF NOT EXISTS Event ( EventID TEXT PRIMARY KEY, PersonID INTEGER, Latitude TEXT, Longitude TEXT, Country TEXT, City TEXT, EventType TEXT, Year TEXT ,UserName TEXT, FOREIGN KEY(UserName) REFERENCES Users(UserName));";
+    private String getCreateEventTableString2 = "CREATE TABLE IF NOT EXISTS Event ( EventID TEXT PRIMARY KEY, PersonID TEXT, Latitude TEXT, Longitude TEXT, Country TEXT, City TEXT, EventType TEXT, Year TEXT ,UserName TEXT, FOREIGN KEY(UserName) REFERENCES Users(UserName));";
     EventDAO(Connection connector) throws DatabaseException {
         conn = connector;
         try{
