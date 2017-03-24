@@ -15,6 +15,17 @@ import java.util.Set;
  */
 
 public class ClientModel {
+    private static ClientModel instance = null;
+    protected ClientModel() {
+
+    }
+    public static ClientModel getInstance(){
+        if(instance == null) {
+            instance = new ClientModel();
+        }
+        return instance;
+    }
+
     public Map<String,Person> people = new HashMap();
     public Map<String,Event> events = new HashMap();
     public Map<String,List<Event>> personEvents = new HashMap();

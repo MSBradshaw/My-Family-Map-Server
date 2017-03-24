@@ -25,7 +25,7 @@ public class ServerProxy {
         this.authCode = authCode;
     }
 
-    private String authCode = "";
+    private static String authCode = "";
     /**
      * create json of the provided information and passes it to the server
      * returns true or false whether a new user was successfully added
@@ -175,13 +175,13 @@ public class ServerProxy {
     /**
      * finds the provided personID and return the corresponding Person Object
      * Auth required: yes
-     *
+     * http://10.0.2.2:8080/user/login
      * @param personID
      * @return
      */
     public String person(String personID, String authID){
         Person person = new Person();
-        String inputUrl = "http://localhost:8080/person" + personID;
+        String inputUrl = "http://10.0.2.2:8080/person" + personID;
         return genericEventoPerson(inputUrl,authID);
     }
     private String genericEventoPerson(String inputUrl, String authID){

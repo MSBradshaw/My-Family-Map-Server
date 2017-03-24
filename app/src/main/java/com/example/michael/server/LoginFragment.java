@@ -16,12 +16,18 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.example.Model.Person;
 import com.example.Model.ServerProxy;
 import com.example.Model.User;
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +49,8 @@ public class LoginFragment extends Fragment {
     private RadioGroup mGenderButton;
     private String mPort = "";
     private String mHost = "";
+    private ClientModel clientModel;
+    private boolean badToastPopped;
 
 
     @Override
@@ -52,7 +60,8 @@ public class LoginFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         hostInitializer(view);
         portInitializer(view);
@@ -213,6 +222,7 @@ public class LoginFragment extends Fragment {
 
     }
     private void checkLoginInfo(){
+        badToastPopped = false;
         if(voidOrEmptyString(mPort)){
             makeToast("Please enter a port");
         }else if(voidOrEmptyString(mHost)){
@@ -226,6 +236,11 @@ public class LoginFragment extends Fragment {
                 LoginTask loginTask = new LoginTask();
                 loginTask.execute(new URL("http://localhost:8080/"));
                 //load the people
+                if(badToastPopped){
+                    return;
+                }
+                SyncTask syncTask = new SyncTask();
+                syncTask.execute(new URL("http://localhost:8080/"));
             } catch (MalformedURLException e) {
                 makeToast("Exception was thrown");
             }
@@ -285,8 +300,9 @@ public class LoginFragment extends Fragment {
             //if there is an error pop a toast here
             if(invalidLogin){
                 makeToast("Failed to login: \n" + output);
+                badToastPopped = true;
             }else{
-                makeToast("Logged In");
+               // makeToast("Logged In");
             }
         }
         private void loginBackGroundTask(){
@@ -306,13 +322,13 @@ public class LoginFragment extends Fragment {
 
     }
     public class SyncTask extends AsyncTask<URL, Integer, Long> {
-        private boolean invalidRegister = false;
+        private boolean invalidSync = false;
         String output = "";
 
         protected Long doInBackground(URL... urls) {
             long l = 0;
             //what to do in the back ground
-            registerBackGroundTask();
+            syncBackGroundTask();
             return l;
         }
 
@@ -321,29 +337,31 @@ public class LoginFragment extends Fragment {
 
         protected void onPostExecute(Long result) {
             //if there is an error pop a toast here
-            if (invalidRegister) {
-                makeToast("Failed to login: \n" + output);
+            if (invalidSync) {
+                makeToast("Failed to sync: \n" + output);
+                badToastPopped = true;
             } else {
-                makeToast("Logged In");
+                makeToast("Sync Worked People Size: " + clientModel.getInstance().people.size());
             }
         }
-        private void registerBackGroundTask(){
+        private void syncBackGroundTask(){
             ServerProxy serverProxy = new ServerProxy();
-            try{
-                output = serverProxy.register(mUser);
-
-            } catch (IOException e) {
-                makeToast("Error Registering");
-            }
-            if(!checkForAuthToken(output)){
+            output = serverProxy.person("",serverProxy.getAuthCode());
+            if(!output.contains("personID")){
                 //bad
-                invalidRegister = true;
+                invalidSync = true;
             }else{
                 //good
-                //save the authToken
-                serverProxy.setAuthCode(extractAuthID(output));
-                //load the info
+                Gson gson = new Gson();
+                Person[] myarray;
+                myarray = (Person[]) gson.fromJson(output, Person[].class);
+                if(myarray != null && myarray.length != 0){
+                    for(int i=0; i < myarray.length ;i++){
+                        clientModel.getInstance().people.put(myarray[i].getPersonID(),myarray[i]);
+                    }
+                }
             }
+
         }
     }
     //return true if there is an authID
@@ -357,7 +375,7 @@ public class LoginFragment extends Fragment {
     //returns the authID
     private String extractAuthID(String string){
 
-        Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\"");
+        Pattern MY_PATTERN = Pattern.compile("Code\":\"(.*)\",\"U");
         Matcher m = MY_PATTERN.matcher(string);
         String s = "";
         while (m.find()) {
