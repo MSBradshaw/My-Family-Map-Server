@@ -14,5 +14,6 @@
     <string name="empty_log_in">You must enter a username and password</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
+    <string name="Name">Mike Bradshaw</string>
 
 </resources>

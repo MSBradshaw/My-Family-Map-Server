@@ -16,10 +16,21 @@ public class MainActivity extends AppCompatActivity {
 
         if (fragment == null) {
             fragment = new LoginFragment();
+            LoginFragment loginFragment = new LoginFragment();
+            loginFragment.setMainActivity(this); //gives LoginFragment access to this class
             fm.beginTransaction()
                     .add(R.id.fragment_container, fragment)
                     .commit();
         }
 
+    }
+
+    public void startMapFrag(){
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+        fragment = new MapFragment();
+        fm.beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .commit();
     }
 }

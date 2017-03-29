@@ -30,11 +30,35 @@ public class ClientModel {
     public Map<String,Event> events = new HashMap();
     public Map<String,List<Event>> personEvents = new HashMap();
 
-    public List<String> eventTypes = new ArrayList();
+    public Set<String> eventTypes;
     // Map<evenType,color for array>
     public Map<String,String> eventTypeAndColor = new HashMap();
     public Set<String> paternalAncestors = new HashSet();
     public Set<String> maternalAncestors = new HashSet();
     // Map<PersonID, Person's Child as Person Object (List of all that person's children)>
     public Map<String,String> personChildren =  new HashMap();
+
+    public void generateColorandEventList(){
+        //get set of events
+        getEventsTypes();
+        setColors();
+        //set colors for each
+    }
+    private void getEventsTypes(){
+        eventTypes = new HashSet();
+        for(String key : ClientModel.getInstance().events.keySet()){
+            String eventtype = ClientModel.getInstance().events.get(key).getDescription();
+            eventTypes.add(eventtype);
+        }
+    }
+    private void setColors(){
+        Integer color = 0;
+        for(String event : eventTypes){
+            ClientModel.getInstance().eventTypeAndColor.put(event,color.toString());
+            color = color + 20;
+            if(color > 360){
+                color = 0;
+            }
+        }
+    }
 }

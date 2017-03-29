@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -37,6 +38,8 @@ import java.util.regex.Pattern;
  */
 
 public class LoginFragment extends Fragment {
+    private static MainActivity mainActivity;
+    public static boolean loggedIn = true;
     private User mUser;
     private EditText mUsernameIn;
     private EditText mPasswordIn;
@@ -54,8 +57,13 @@ public class LoginFragment extends Fragment {
     private boolean badToastPopped;
     private String userFirstName;
     private String userLastName;
+    public MainActivity getMainActivity() {
+        return mainActivity;
+    }
 
-
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -243,6 +251,8 @@ public class LoginFragment extends Fragment {
                 if(badToastPopped){
                     return;
                 }
+
+
             } catch (MalformedURLException e) {
                 makeToast("Exception was thrown");
             }
@@ -283,7 +293,7 @@ public class LoginFragment extends Fragment {
                 if(badToastPopped){
                     return;
                 }
-                //syn the people's stuff
+                //
 
             } catch (MalformedURLException e) {
                 makeToast("Exception was thrown");
@@ -420,12 +430,23 @@ public class LoginFragment extends Fragment {
             if (invalidSync) {
                 makeToast("Failed to sync: \n" + output);
                 badToastPopped = true;
+                return;
             } else {
                 //makeToast("Sync Worked\nPeople Size: " + clientModel.getInstance().people.size()
                   //      + "Events Size: " + clientModel.getInstance().events.size());
-                makeToast("Firstname: " + userFirstName +
-                "\nLastname: " + userLastName);
+               makeToast("Firstname: " + userFirstName +
+                    "\nLastname: " + userLastName);
             }
+            mainActivity.startMapFrag();
+            //call new frag here
+        }
+        private void startMapFrag(){
+            FragmentManager fm = getFragmentManager();
+            Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+               fragment = new LoginFragment();
+               fm.beginTransaction()
+                       .add(R.id.fragment_container, fragment)
+                       .commit();
         }
         private void syncBackGroundTask(){
             ServerProxy serverProxy = new ServerProxy();
