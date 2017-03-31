@@ -14,6 +14,7 @@
     <string name="empty_log_in">You must enter a username and password</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
-    <string name="Name">Mike Bradshaw</string>
+    <string name="Name">Click on a marker</string>
+    <string name="info">to see event details</string>
 
 </resources>

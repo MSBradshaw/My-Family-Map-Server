@@ -1,14 +1,29 @@
 package com.example.michael.server;
 
+import android.app.ActivityManager;
+import android.content.ClipData;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.IconButton;
+import android.widget.IconTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.Model.Event;
+import com.example.Model.Person;
 import com.example.Model.User;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,30 +35,53 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.joanzapata.android.iconify.IconDrawable;
+import com.joanzapata.android.iconify.Iconify;
+
+import static android.support.v7.appcompat.R.attr.icon;
 
 /**
  * Created by Michael on 3/27/2017.
  */
 
 public class MapFragment extends Fragment implements OnMapReadyCallback{
+    private static MainActivity mainActivity;
+
+    public void setMainActivity(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
+    }
+
     GoogleMap mGoogleMap;
     MapView mMapView;
     View mView;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                           Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_map, container, false);
+        setHasOptionsMenu(true);
         return mView;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        LinearLayout footer = (LinearLayout) mView.findViewById(R.id.footer);
+        footer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //start new activity
+                makeToast("It clicked");
+                startPersonActivity();
 
+
+
+            }
+        });
         mMapView = (MapView) mView.findViewById(R.id.map);
         if(mMapView != null){
             mMapView.onCreate(null);
@@ -62,25 +100,39 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             @Override
             public boolean onMarkerClick(Marker marker) {
                 //load the event info bases on what they event has
+                String eventID = marker.getTitle(); // the title contains the ID
+                //get the event info
+                Event event = ClientModel.getInstance().events.get(eventID);
+                Person person  = ClientModel.getInstance().people.get(event.getPersonID());
+                //sets the current person so that the PersonView can get the person info
+                ClientModel.getInstance().setCurrentPerson(person);
+                String name = person.getFirstname() + " " + person.getLastname();
+                String eventStr = event.getDescription() + ": " + event.getCity() +
+                        ", " + event.getCountry() + " (" + event.getYear() + ")";
+                //get the person info
                 //this code below replaces the two fields with the right what ever info you give it
-                changeFooterInfo("Sir Charles","Hatching: A kingdom Under the Sea, (2005)");
+                changeFooterInfo(name,eventStr);
+                //add an icon to the footer
 
 
                 return true;
             }
         });
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(40.689247, -74.044502))
-                .title("Statue Of Liberty"));
+        loadEventsIntoMap(googleMap);
         CameraPosition Liberty = CameraPosition.builder().target(new LatLng(40.689247, -74.044502))
                 .zoom(16).bearing(0).tilt(45).build();
-        loadEventsIntoMap(googleMap);
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(Liberty));
+    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.toolbar, menu);
     }
     public void loadEventsIntoMap(GoogleMap googleMap){
         //initilize the event and color list
         ClientModel.getInstance().generateColorandEventList();
-        //adds each event to the map with coorsiponding color
+        //adds each event to the map with corresponding color
         for(String key : ClientModel.getInstance().events.keySet()){
             String lat = ClientModel.getInstance().events.get(key).getLatitude();
             String lng = ClientModel.getInstance().events.get(key).getLongitude();
@@ -92,7 +144,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             googleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.defaultMarker(color))
                     .position(new LatLng(latitude, longitude))
-                    .title(eventType));
+                    .title(eventID));
         }
 
     }
@@ -101,5 +153,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         personName.setText(name);
         TextView eventInfo = (TextView) mView.findViewById(R.id.event_and_location_and_year);
         eventInfo.setText(info);
+        //attach the right icon here
+
+
     }
+    private void makeToast(String message){
+        Toast.makeText(getActivity(),message,Toast.LENGTH_SHORT).show();
+    }
+    private void startPersonActivity(){
+        PersonActivity.setMainActivity(mainActivity);
+        Intent intent = new Intent(mainActivity, PersonActivity.class);
+        startActivity(intent);
+    }
+
 }

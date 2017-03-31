@@ -29,8 +29,11 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
         fragment = new MapFragment();
+        MapFragment mapFragment = new MapFragment();
+        mapFragment.setMainActivity(this);
         fm.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
     }
+
 }

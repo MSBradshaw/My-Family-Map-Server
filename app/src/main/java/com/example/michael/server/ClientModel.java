@@ -15,6 +15,16 @@ import java.util.Set;
  */
 
 public class ClientModel {
+    private static Person currentPerson;
+
+    public static Person getCurrentPerson() {
+        return currentPerson;
+    }
+
+    public static void setCurrentPerson(Person currentPerson) {
+        ClientModel.currentPerson = currentPerson;
+    }
+
     private static ClientModel instance = null;
     protected ClientModel() {
 
