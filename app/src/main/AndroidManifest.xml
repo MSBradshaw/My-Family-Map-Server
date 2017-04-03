@@ -21,6 +21,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PersonActivity"/>
+        <activity android:name=".MapActivity"/>
 
         <!--Google Maps Android API Key-->
         <meta-data

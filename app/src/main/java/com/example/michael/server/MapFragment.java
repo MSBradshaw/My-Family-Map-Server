@@ -38,6 +38,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 
+import java.util.Set;
+
 import static android.support.v7.appcompat.R.attr.icon;
 
 /**
@@ -46,6 +48,24 @@ import static android.support.v7.appcompat.R.attr.icon;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     private static MainActivity mainActivity;
+    private static double lat;
+    private static double lng;
+
+    public static double getLng() {
+        return lng;
+    }
+
+    public static void setLng(double lng) {
+        MapFragment.lng = lng;
+    }
+
+    public static double getLat() {
+        return lat;
+    }
+
+    public static void setLat(double lat) {
+        MapFragment.lat = lat;
+    }
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -120,7 +140,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         });
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         loadEventsIntoMap(googleMap);
-        CameraPosition Liberty = CameraPosition.builder().target(new LatLng(40.689247, -74.044502))
+
+        CameraPosition Liberty = CameraPosition.builder().target(new LatLng(getLat(), getLng()))
                 .zoom(16).bearing(0).tilt(45).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(Liberty));
     }

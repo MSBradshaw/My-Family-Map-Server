@@ -4,6 +4,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:id="@+id/person_icon"
         android:layout_margin="5dp"
         android:paddingTop="2dp"
         android:src="@drawable/ic_man"

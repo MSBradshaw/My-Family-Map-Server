@@ -1,6 +1,9 @@
 package com.example.michael.server;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,6 +49,30 @@ public class PersonActivity extends AppCompatActivity {
         RecyclerView viewEvents = (RecyclerView) findViewById(R.id.events);
         RecyclerView viewRelatives = (RecyclerView) findViewById(R.id.family);
         TextView gender = (TextView) findViewById(R.id.gender);
+        ImageView familyDropDown = (ImageView) findViewById(R.id.relatives_dropdown);
+        familyDropDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecyclerView rc = (RecyclerView) findViewById(R.id.family);
+                if(rc.getVisibility() == View.VISIBLE){
+                    rc.setVisibility(View.GONE);
+                }else{
+                    rc.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        ImageView eventsDropDown = (ImageView) findViewById(R.id.life_events_dropdown);
+        eventsDropDown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecyclerView rc = (RecyclerView) findViewById(R.id.events);
+                if(rc.getVisibility() == View.VISIBLE){
+                    rc.setVisibility(View.GONE);
+                }else{
+                    rc.setVisibility(View.VISIBLE);
+                }
+            }
+        });
         if(ClientModel.getCurrentPerson().getGender().equals("m") || ClientModel.getCurrentPerson().getGender().equals("M")){
             gender.setText("Male");
         }else{
@@ -161,6 +189,15 @@ public class PersonActivity extends AppCompatActivity {
             String name = ClientModel.getInstance().people.get(mEvent.getPersonID()).getFirstname() +
                     " " + ClientModel.getInstance().people.get(mEvent.getPersonID()).getLastname();
             mNameTextView.setText(name);
+            ImageView eventImg = (ImageView) itemView.findViewById(R.id.event_img);
+            if(event.getDescription().equals("marriage")){
+                eventImg.setImageResource(R.drawable.marriage);
+            }else if(event.getDescription().equals("death")){
+                eventImg.setImageResource(R.mipmap.death);
+            }else if(event.getDescription().equals("birth")){
+                eventImg.setImageResource(R.mipmap.birth);
+            }
+            //else the icon will stay as the generic event icon
         }
         //initialize the fields to be updated
         public EventHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -172,15 +209,36 @@ public class PersonActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
+            //start map activity focused on that event
+            MapActivity.setMainActivity(mainActivity);
+            MapActivity.setEvent(mEvent);
+            Intent intent = new Intent(mainActivity, MapActivity.class);
+            startActivity(intent);
             makeToast("McClick!");
+            //start new So got map activity focused on that event
         }
     }
     private class FamilyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView name;
         private TextView relation;
+        private Person person;
         public void bind(Person person, String relationString){
+            this.person = person;
             name.setText(person.getFirstname() + " " + person.getLastname());
             relation.setText(relationString);
+            if(person.getGender().equals("m") || person.getGender().equals("M")){
+                ImageView genderIcon = (ImageView) itemView.findViewById(R.id.person_icon);
+                genderIcon.setImageResource(R.drawable.ic_father);
+                if(relationString.equals("Child")){
+                    genderIcon.setImageResource(R.drawable.ic_child_boy);
+                }
+            }else{
+                ImageView genderIcon = (ImageView) itemView.findViewById(R.id.person_icon);
+                genderIcon.setImageResource(R.drawable.ic_mother);
+                if(relationString.equals("Child")){
+                    genderIcon.setImageResource(R.drawable.ic_child_girl);
+                }
+            }
         }
         public FamilyHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.single_person, parent, false));
@@ -190,7 +248,12 @@ public class PersonActivity extends AppCompatActivity {
         }
         @Override
         public void onClick(View view) {
-            makeToast("McClick!");
+            //start a new person activity
+            //change the current person...
+            ClientModel.setCurrentPerson(person);
+            PersonActivity.setMainActivity(mainActivity);
+            Intent intent = new Intent(mainActivity, PersonActivity.class);
+            startActivity(intent);
         }
     }
     private void makeToast(String message){

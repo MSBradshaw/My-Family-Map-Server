@@ -151,13 +151,13 @@ public class FillService {
             newPersons = new HashMap();
             for(Person j : temp.keySet()){
                 try {
-                    Person tempMother = generateRandomPersonWithRealParents(j.getMother(), P.getDescendant(), "f");
+                    Person tempMother = generateRandomPersonWithSpouse(j.getMother(),j.getFather(), P.getDescendant(), "f");
                     int motherBirthYear = generateEvents(tempMother, temp.get(j));
                     newPersons.put(tempMother, motherBirthYear);
                     trans.P.addToPersonTable(tempMother);
                     successPersonCount++;
 
-                    Person tempFather = generateRandomPersonWithRealParents(j.getFather(),P.getDescendant(), "m");
+                    Person tempFather = generateRandomPersonWithSpouse(j.getFather(),j.getMother(),P.getDescendant(), "m");
                     int fatherBirthYear = generateEvents(tempFather, temp.get(j));
                     newPersons.put(tempFather, fatherBirthYear);
                     trans.P.addToPersonTable(tempFather);
@@ -189,7 +189,7 @@ public class FillService {
         try {
             try {
                 createEvents(P, "birth", birthYear);
-                createEvents(P, "marraige", marrage);
+                createEvents(P, "marriage", marrage);
                 createEvents(P, "death", death);
             } catch (DatabaseException e) {
                 DatabaseException exc = new DatabaseException("");
@@ -265,6 +265,22 @@ public class FillService {
         P.setLastname(getLastName());
         P.setPersonID(self);
         P.setSpouse(getRandomIDCode());
+        P.setFather(getRandomIDCode());
+        P.setMother(getRandomIDCode());
+        P.setDescendant(decendant);
+        return P;
+    }
+    public Person generateRandomPersonWithSpouse(String self,String spouse, String decendant, String gender) throws IOException, DatabaseException {
+        Person P = new Person();
+        P.setGender(gender);
+        if(gender.equals("f") || gender.equals("F")){
+            P.setFirstname(getFirstNameFemale());
+        }else{
+            P.setFirstname(getFirstNameMale());
+        }
+        P.setLastname(getLastName());
+        P.setPersonID(self);
+        P.setSpouse(spouse);
         P.setFather(getRandomIDCode());
         P.setMother(getRandomIDCode());
         P.setDescendant(decendant);
