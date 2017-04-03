@@ -153,7 +153,64 @@ public class PersonActivity extends AppCompatActivity {
 
         public EventAdapter(List<Event> crimes, Context context) {
             mEvents = crimes;
+            sortEvents();
             this.context = context;
+        }
+        private void sortEvents(){
+            List<Event> temp = mEvents;
+            //birth first
+            //death last
+            //sorted by date or ABC if no date
+            basicSort(temp);
+            //order the birth and death dates
+            boolean changed = true;
+            while(changed) {
+                changed = false;
+                for (int i = 0; i < temp.size(); i++) {
+                    if (temp.get(i).getDescription().toLowerCase().equals("birth") && i != 0) {
+                        Event e = temp.get(i);
+                        temp.remove(i);
+                        temp.add(0, e);
+                        changed = true;
+                    } else if (temp.get(i).getDescription().toLowerCase().equals("death") && i != temp.size()-1) {
+                        Event e = temp.get(i);
+                        temp.remove(i);
+                        temp.add(temp.size() - 1, e);
+                        changed = true;
+                    }
+                }
+            }
+            mEvents = temp;
+        }
+        private void basicSort(List<Event> temp){
+            boolean changed = true;
+            while(changed) {
+                changed = false;
+                for (int i = 0; i < temp.size() - 1; i++) {
+                    if(temp.get(i).getYear() != null && !temp.get(i).getYear().equals("")
+                            && temp.get(i+1).getYear() != null && !temp.get(i+1).getYear().equals("")
+                            ){
+                        int year1 = Integer.parseInt(temp.get(i).getYear());
+                        int year2 = Integer.parseInt(temp.get(i + 1).getYear());
+                        if (year1 > year2) {
+                            //switch the two of them
+                            Event e = temp.get(i);
+                            temp.set(i,temp.get(i+1));
+                            temp.set(i+1,e);
+                            changed = true;
+                        }
+                    }else{
+                        String first = temp.get(i).getDescription().toLowerCase();
+                        String second = temp.get(i+1).getDescription().toLowerCase();
+                        if(first.compareTo(second) > 0){
+                            Event e = temp.get(i);
+                            temp.set(i,temp.get(i+1));
+                            temp.set(i+1,e);
+                            changed = true;
+                        }
+                    }
+                }
+            }
         }
         @Override
         public PersonActivity.EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {

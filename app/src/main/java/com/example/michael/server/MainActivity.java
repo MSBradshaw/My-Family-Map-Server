@@ -30,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
         fragment = new MapFragment();
         MapFragment mapFragment = new MapFragment();
-        mapFragment.setLat(33.7500);
-        mapFragment.setLng(-83.6167);
+        mapFragment.setLat(36.1667); //nashville
+        mapFragment.setLng(-85.2167);
         mapFragment.setMainActivity(this);
         fm.beginTransaction()
                 .replace(R.id.fragment_container, fragment)
