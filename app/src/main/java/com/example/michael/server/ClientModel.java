@@ -16,15 +16,12 @@ import java.util.Set;
 
 public class ClientModel {
     private static Person currentPerson;
-
     public static Person getCurrentPerson() {
         return currentPerson;
     }
-
     public static void setCurrentPerson(Person currentPerson) {
         ClientModel.currentPerson = currentPerson;
     }
-
     private static ClientModel instance = null;
     protected ClientModel() {
 
@@ -47,11 +44,23 @@ public class ClientModel {
     public Set<String> maternalAncestors = new HashSet();
     // Map<PersonID, Person's Child as Person Object (List of all that person's children)>
     public Map<String,String> personChildren =  new HashMap();
-
+    private void fillpersonEvents(){
+        for(String pKey : people.keySet()){
+            List<Event> eventsTemp = new ArrayList();
+            for(String eKey : events.keySet()){
+                if(events.get(eKey).getPersonID().equals(pKey)){
+                    eventsTemp.add(events.get(eKey));
+                }
+            }
+            personEvents.put(pKey,eventsTemp);
+        }
+        System.out.println(personEvents.size());
+    }
     public void generateColorandEventList(){
         //get set of events
         getEventsTypes();
         setColors();
+        fillpersonEvents();
         //set colors for each
     }
     private void getEventsTypes(){
@@ -70,5 +79,47 @@ public class ClientModel {
                 color = 0;
             }
         }
+    }
+    public Person getChild(){
+        Person child = null;
+        for(String key:people.keySet()){
+            if(people.get(key).getMother().equals(currentPerson.getPersonID())){
+                child = people.get(key);
+            }
+            if(people.get(key).getFather().equals(currentPerson.getPersonID())){
+                child = people.get(key);
+            }
+        }
+        return child;
+    }
+    public Person getMother(){
+       Person mom = null;
+        for(String key: people.keySet()){
+            if(key.equals(currentPerson.getMother())){
+                mom = people.get(key);
+                break;
+            }
+        }
+        return mom;
+    }
+    public Person getFather(){
+        Person dad = null;
+        for(String key: people.keySet()){
+            if(key.equals(currentPerson.getFather())){
+                dad = people.get(key);
+                break;
+            }
+        }
+        return dad;
+    }
+    public Person getSpouse(){
+        Person spouse = null;
+        for(String key: people.keySet()){
+            if(key.equals(currentPerson.getSpouse())){
+                spouse = people.get(key);
+                break;
+            }
+        }
+        return spouse;
     }
 }

@@ -151,13 +151,13 @@ public class FillService {
             newPersons = new HashMap();
             for(Person j : temp.keySet()){
                 try {
-                    Person tempMother = generateRandomPerson(P.getDescendant(), "f");
+                    Person tempMother = generateRandomPersonWithRealParents(j.getMother(), P.getDescendant(), "f");
                     int motherBirthYear = generateEvents(tempMother, temp.get(j));
                     newPersons.put(tempMother, motherBirthYear);
                     trans.P.addToPersonTable(tempMother);
                     successPersonCount++;
 
-                    Person tempFather = generateRandomPerson(P.getDescendant(), "m");
+                    Person tempFather = generateRandomPersonWithRealParents(j.getFather(),P.getDescendant(), "m");
                     int fatherBirthYear = generateEvents(tempFather, temp.get(j));
                     newPersons.put(tempFather, fatherBirthYear);
                     trans.P.addToPersonTable(tempFather);
@@ -254,6 +254,22 @@ public class FillService {
         P.setDescendant(decendant);
         return P;
     }
+    public Person generateRandomPersonWithRealParents(String self, String decendant, String gender) throws IOException, DatabaseException {
+        Person P = new Person();
+        P.setGender(gender);
+        if(gender.equals("f") || gender.equals("F")){
+            P.setFirstname(getFirstNameFemale());
+        }else{
+            P.setFirstname(getFirstNameMale());
+        }
+        P.setLastname(getLastName());
+        P.setPersonID(self);
+        P.setSpouse(getRandomIDCode());
+        P.setFather(getRandomIDCode());
+        P.setMother(getRandomIDCode());
+        P.setDescendant(decendant);
+        return P;
+    }
     public String getFirstNameFemale() throws IOException, DatabaseException {
         try {
             String nameArray[];
@@ -280,6 +296,8 @@ public class FillService {
         person.setLastname(user.getLastname());
         person.setGender(user.getGender());
         person.setPersonID(user.getPersonID());
+        person.setMother(getRandomIDCode());
+        person.setFather(getRandomIDCode());
         return person;
     }
     public String getFirstNameMale() throws IOException, DatabaseException {

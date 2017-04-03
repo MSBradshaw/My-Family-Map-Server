@@ -21,7 +21,6 @@ import java.util.List;
 
 public class PersonDetailsFragment extends Fragment {
     private RecyclerView mPersonRecyclerView;
-    private PersonAdapter mAdapter;
     private Person mPerson;
     private MainActivity mainActivity;
 
@@ -37,10 +36,10 @@ public class PersonDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.person_recycler_frag, container, false);
+        View view = inflater.inflate(R.layout.person_recycler_view, container, false);
 
         mPersonRecyclerView = (RecyclerView) view
-                .findViewById(R.id.person_recycler_view);
+                .findViewById(R.id.events);
         mPersonRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         updateUI();
         return view;

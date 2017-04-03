@@ -14,8 +14,13 @@ import com.example.Services.PersonService;
 import com.example.Services.PersonWithIdService;
 import com.example.Services.RegisterService;
 
+import java.awt.SystemColor;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -388,6 +393,62 @@ public class RegisterServiceTester {
                 "Mike Bradshaw"+
                 "}";
         assertTrue(!checkForAuthToken(string));
+    }
+    public Map<String,List<Event>> personEvents;
+    @Test
+    public void fillpersonEvents(){
+        Map<String, Person> people = new HashMap();
+        personEvents = new HashMap();
+        Map<String, Event> events = new HashMap();
+        Person person1 = new Person();
+        person1.setPersonID("mike");
+        Event event1 = new Event();
+        event1.setPersonID("mike");
+        Event event2 = new Event();
+        event2.setPersonID("mike");
+        Event event3 = new Event();
+        event3.setPersonID("mike");
+        Event event4 = new Event();
+        event4.setPersonID("mike");
+        Person person2 = new Person();
+        person2.setPersonID("jeff");
+        Event event5 = new Event();
+        event5.setPersonID("jeff");
+        Event event6 = new Event();
+        event6.setPersonID("jeff");
+        Event event7 = new Event();
+        event7.setPersonID("jeff");
+        Event event8 = new Event();
+        event8.setPersonID("jeff");
+        event1.setEventID("1");
+        event2.setEventID("2");
+        event3.setEventID("3");
+        event4.setEventID("4");
+        event5.setEventID("5");
+        event6.setEventID("6");
+        event7.setEventID("7");
+        event8.setEventID("8");
+        people.put(person1.getPersonID(), person1);
+        people.put(person2.getPersonID(), person2);
+        events.put(event1.getEventID(),event1);
+        events.put(event2.getEventID(),event2);
+        events.put(event3.getEventID(),event3);
+        events.put(event4.getEventID(),event4);
+        events.put(event5.getEventID(),event5);
+        events.put(event6.getEventID(),event6);
+        events.put(event7.getEventID(),event7);
+        events.put(event8.getEventID(),event8);
+        List<Event> eventsTemp;
+        for(String pKey : people.keySet()){
+            eventsTemp = new ArrayList();
+            for(String eKey : events.keySet()){
+                if(events.get(eKey).getPersonID().equals(pKey)){
+                    eventsTemp.add(events.get(eKey));
+                }
+            }
+            personEvents.put(pKey,eventsTemp);
+        }
+        System.out.println(personEvents.get("mike").size());
     }
 }
 

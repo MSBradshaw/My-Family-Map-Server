@@ -86,6 +86,8 @@ public class RegisterService {
         P.setLastname(U.getLastname());
         P.setGender(U.getGender());
         P.setDescendant(U.getUsername());
+        P.setFather(generateRandomID());
+        P.setMother(generateRandomID());
         return P;
     }
     public boolean checkInfo() {
