@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".PersonActivity"/>
         <activity android:name=".MapActivity"/>
+        <activity android:name=".SettingsActivity"/>
 
         <!--Google Maps Android API Key-->
         <meta-data

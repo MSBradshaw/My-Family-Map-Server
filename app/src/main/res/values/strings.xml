@@ -19,6 +19,18 @@
     <string name="info">to see event details</string>
     <string name="life_events">Life Events</string>
     <string name="relatives">Relatives</string>
+    <string name="life_stories_top">Life Story Lines</string>
+    <string name="life_stories_bottom">SHOW LIFE STORY LINES</string>
+    <string name="family_top">Family Tree Lines</string>
+    <string name="family_bottom">SHOW FAMILY TREE LINES</string>
+    <string-array name="color_array">
+        <item>Red</item>
+        <item>Yellow</item>
+        <item>Blue</item>
+        <item>Green</item>
+        <item>Purple</item>
+        <item>Orange</item>
+    </string-array>
 
 
 </resources>

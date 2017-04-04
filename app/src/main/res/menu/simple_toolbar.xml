@@ -2,22 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/search"
+        android:id="@+id/back"
         app:showAsAction="always"
-        android:icon="@drawable/ic_search"
+        android:icon="@drawable/back"
         android:title="search"
         />
     <item
-        android:id="@+id/specific_event"
+        android:id="@+id/double_back"
         app:showAsAction="always"
-        android:icon="@drawable/ic_filter"
+        android:icon="@drawable/double_back"
         android:title="filter"
         />
-    <item
-        android:id="@+id/settings"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_settings"
-        android:title="settings"
-        />
-
 </menu>

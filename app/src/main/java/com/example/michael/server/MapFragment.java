@@ -50,6 +50,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private static MainActivity mainActivity;
     private static double lat;
     private static double lng;
+    private static boolean isSimpleToolbar = false;
+
+    public void setMapActivity(MapActivity mapActivity) {
+        this.mapActivity = mapActivity;
+    }
+
+    private static MapActivity mapActivity;
+
+    public static boolean isSimpleToolbar() {
+        return isSimpleToolbar;
+    }
+
+    public static void setIsSimpleToolbar(boolean isSimpleToolbar) {
+        MapFragment.isSimpleToolbar = isSimpleToolbar;
+    }
+
+    public static MainActivity getMainActivity() {
+        return mainActivity;
+    }
 
     public static double getLng() {
         return lng;
@@ -148,8 +167,43 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.toolbar, menu);
+        if(isSimpleToolbar){
+            inflater.inflate(R.menu.simple_toolbar, menu);
+        }else {
+            inflater.inflate(R.menu.toolbar, menu);
+        }
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.back:
+                //function of stuff to do
+                mapActivity.finishHim();
+                makeToast("Nice Benny");
+                return true;
+            case R.id.double_back:
+                //other function
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                getContext().startActivity(intent);
+                return true;
+            case R.id.settings:
+                //start the settings activity
+                startSettingsActivity();
+                return true;
+            case R.id.search:
+                makeToast("Click");
+                return true;
+            case R.id.specific_event:
+                makeToast("Click Events");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     public void loadEventsIntoMap(GoogleMap googleMap){
         //initilize the event and color list
         ClientModel.getInstance().generateColorandEventList();
@@ -184,6 +238,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private void startPersonActivity(){
         PersonActivity.setMainActivity(mainActivity);
         Intent intent = new Intent(mainActivity, PersonActivity.class);
+        startActivity(intent);
+    }
+    private void startSettingsActivity(){
+        SettingsActivity.setMainActivity(mainActivity);
+        Intent intent = new Intent(mainActivity, SettingsActivity.class);
         startActivity(intent);
     }
 

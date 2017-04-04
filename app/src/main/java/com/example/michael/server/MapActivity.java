@@ -31,6 +31,8 @@ public class MapActivity extends AppCompatActivity {
 
         fragment = new MapFragment();
         MapFragment mapFragment = new MapFragment();
+        mapFragment.setMapActivity(this);
+        mapFragment.setIsSimpleToolbar(true);
         double lat = Double.parseDouble(event.getLatitude());
         double lng = Double.parseDouble(event.getLongitude());
         mapFragment.setLat(lat);
@@ -40,5 +42,8 @@ public class MapActivity extends AppCompatActivity {
                 .add(R.id.fragment_container, fragment)
                 .commit();
 
+    }
+    public void finishHim(){
+        finish();
     }
 }
