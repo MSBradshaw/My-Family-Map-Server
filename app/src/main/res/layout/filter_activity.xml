@@ -2,12 +2,129 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:text="Filter Activity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/filter_recycler"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:background="@color/colorFooter"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="132dp"
+                android:text="Father's Side"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="SHOW FATHER'S SIDE EVENTS"
+                android:textSize="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Switch
+            android:layout_marginLeft="70dp"
+            android:layout_gravity="right"
+            android:id="@+id/father_side_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OFF " />
+    </LinearLayout>
+    <LinearLayout
+        android:background="@color/colorFooter"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="132dp"
+                android:text="Mother's Side"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="SHOW MOTHER'S SIDE EVENTS"
+                android:textSize="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Switch
+            android:layout_marginLeft="70dp"
+            android:layout_gravity="right"
+            android:id="@+id/mother_side_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OFF " />
+    </LinearLayout>
+    <LinearLayout
+        android:background="@color/colorFooter"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="132dp"
+                android:text="Male Events"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="SHOW MALE EVENTS"
+                android:textSize="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Switch
+            android:layout_marginLeft="70dp"
+            android:layout_gravity="right"
+            android:id="@+id/male_events"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OFF " />
+    </LinearLayout>
+    <LinearLayout
+        android:background="@color/colorFooter"
+        android:layout_marginTop="5dp"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_marginRight="132dp"
+                android:text="Female Events"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:text="SHOW FEMALE EVENTS"
+                android:textSize="8dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <Switch
+            android:layout_marginLeft="70dp"
+            android:layout_gravity="right"
+            android:id="@+id/female_events"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OFF " />
+    </LinearLayout>
+
 </LinearLayout>

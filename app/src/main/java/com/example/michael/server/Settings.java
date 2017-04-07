@@ -17,6 +17,42 @@ public class Settings {
     private String spouse_lines_color = "Red";
     private String map_type = "Normal";
     public Map<String,Boolean> filterSettings = new HashMap();
+    private boolean fatherSideOn = true;
+    private boolean motherSideOn = true;
+    private boolean malesOn = true;
+    private boolean femalesOn = true;
+
+    public boolean isFatherSideOn() {
+        return fatherSideOn;
+    }
+
+    public void setFatherSideOn(boolean fatherSideOn) {
+        this.fatherSideOn = fatherSideOn;
+    }
+
+    public boolean isMotherSideOn() {
+        return motherSideOn;
+    }
+
+    public void setMotherSideOn(boolean motherSideOn) {
+        this.motherSideOn = motherSideOn;
+    }
+
+    public boolean isMalesOn() {
+        return malesOn;
+    }
+
+    public void setMalesOn(boolean malesOn) {
+        this.malesOn = malesOn;
+    }
+
+    public boolean isFemalesOn() {
+        return femalesOn;
+    }
+
+    public void setFemalesOn(boolean femalesOn) {
+        this.femalesOn = femalesOn;
+    }
 
     public String getMap_type() {
         return map_type;

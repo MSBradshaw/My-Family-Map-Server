@@ -36,25 +36,20 @@ public class ClientModel {
         return instance;
     }
     private String userPersonID;
-
     public String getUserPersonID() {
         return userPersonID;
     }
-
     public void setUserPersonID(String userPersonID) {
         this.userPersonID = userPersonID;
     }
-
     public Map<String,Person> people = new HashMap();
     public Map<String,Event> events = new HashMap();
+    private Map<String,Event> eventsSuper = new HashMap();
     public Map<String,List<Event>> personEvents = new HashMap();
-
     public Set<String> eventTypes;
-    // Map<evenType,color for array>
     public Map<String,String> eventTypeAndColor = new HashMap();
     public Set<String> paternalAncestors = new HashSet();
     public Set<String> maternalAncestors = new HashSet();
-    // Map<PersonID, Person's Child as Person Object (List of all that person's children)>
     public Map<String,String> personChildren =  new HashMap();
     private void fillpersonEvents(){
         for(String pKey : people.keySet()){
@@ -77,8 +72,8 @@ public class ClientModel {
     }
     private void getEventsTypes(){
         eventTypes = new HashSet();
-        for(String key : ClientModel.getInstance().events.keySet()){
-            String eventtype = ClientModel.getInstance().events.get(key).getDescription();
+        for(String key : events.keySet()){
+            String eventtype = events.get(key).getDescription();
             eventTypes.add(eventtype);
         }
     }
@@ -161,4 +156,19 @@ public class ClientModel {
             getSideOfFamily(father.getPersonID(),ancestors);
         }
     }
+    public void setEventsSuper(){
+        eventsSuper = events;
+    }
+    public void filterEvents(){
+        //filter out mother
+        //filter out father
+        //filter out males
+        //filter out females
+        //filter out events
+    }
+    public void filterOutMotherSide(){
+        getSideOfFamilyStarter();
+        //remove the maternal ancestors
+    }
+
 }

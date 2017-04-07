@@ -36,6 +36,53 @@ public class FilterActivity extends AppCompatActivity {
         FilterAdapter filterAdapter = new FilterAdapter();
         filterRecycler.setAdapter(filterAdapter);
         filterRecycler.setLayoutManager(new LinearLayoutManager(this));
+        applySettings();
+    }
+    private void applySettings(){
+        Switch father = (Switch) findViewById(R.id.father_side_switch);
+        setSwitchText(father,Settings.getInstance().isFatherSideOn());
+        addOnCheckedChangeListener(father,"father");
+
+        Switch mother = (Switch) findViewById(R.id.mother_side_switch);
+        setSwitchText(mother,Settings.getInstance().isMotherSideOn());
+        addOnCheckedChangeListener(mother,"mother");
+
+        Switch male = (Switch) findViewById(R.id.male_events);
+        setSwitchText(male,Settings.getInstance().isMalesOn());
+        addOnCheckedChangeListener(male,"male");
+
+        Switch female = (Switch) findViewById(R.id.female_events);
+        setSwitchText(female,Settings.getInstance().isFemalesOn());
+        addOnCheckedChangeListener(female,"female");
+    }
+    private void addOnCheckedChangeListener(final Switch switcher, final String type){
+        switcher.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener(){
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    switcher.setText("ON");
+                }else{
+                    switcher.setText("OFF");
+                }
+                if(type.equals("mother")){
+                    Settings.getInstance().setMotherSideOn(isChecked);
+                }else if(type.equals("father")){
+                    Settings.getInstance().setFatherSideOn(isChecked);
+                }else if(type.equals("male")){
+                    Settings.getInstance().setMalesOn(isChecked);
+                }else if(type.equals("female")){
+                    Settings.getInstance().setFemalesOn(isChecked);
+                }
+            }
+        });
+    }
+    private void setSwitchText(Switch switcher, boolean theBool){
+        switcher.setChecked(theBool);
+        if(theBool){
+            switcher.setText("ON");
+        }else{
+            switcher.setText("OFF");
+        }
     }
     private class FilterAdapter extends RecyclerView.Adapter<FilterActivity.FilterHolder> {
         List<String> eventTypes;
@@ -88,9 +135,17 @@ public class FilterActivity extends AppCompatActivity {
                     }
                 }
             });
-            mFilterSwitch.setChecked(true);
-            int size = Settings.getInstance().filterSettings.size();
-            mFilterSwitch.setText("ON");
+            if(Settings.getInstance().filterSettings.containsKey(type)){
+                mFilterSwitch.setChecked(Settings.getInstance().filterSettings.get(type));
+                if(Settings.getInstance().filterSettings.get(type)){
+                    mFilterSwitch.setText("ON");
+                }else{
+                    mFilterSwitch.setText("OFF");
+                }
+            }else{
+                mFilterSwitch.setChecked(true);
+                mFilterSwitch.setText("ON");
+            }
         }
 
         @Override

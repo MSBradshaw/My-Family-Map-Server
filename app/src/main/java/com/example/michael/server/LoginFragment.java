@@ -439,15 +439,13 @@ public class LoginFragment extends Fragment {
                 badToastPopped = true;
                 return;
             } else {
-                //makeToast("Sync Worked\nPeople Size: " + clientModel.getInstance().people.size()
-                  //      + "Events Size: " + clientModel.getInstance().events.size());
                 if(!outsideCall){
                     makeToast("Firstname: " + userFirstName +
                             "\nLastname: " + userLastName);
                     mainActivity.startMapFrag();
                 }
             }
-            //call new frag here
+            ClientModel.getInstance().setEventsSuper();
         }
         private void startMapFrag(){
             FragmentManager fm = getFragmentManager();
