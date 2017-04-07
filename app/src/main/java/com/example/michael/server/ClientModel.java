@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static android.graphics.Color.*;
+
 /**
  * Created by Michael on 3/23/2017.
  */
 
 public class ClientModel {
+    public  Map<String, Integer> possibleColors = new HashMap();
     private static Person currentPerson;
     public static Person getCurrentPerson() {
         return currentPerson;
@@ -31,6 +34,15 @@ public class ClientModel {
             instance = new ClientModel();
         }
         return instance;
+    }
+    private String userPersonID;
+
+    public String getUserPersonID() {
+        return userPersonID;
+    }
+
+    public void setUserPersonID(String userPersonID) {
+        this.userPersonID = userPersonID;
     }
 
     public Map<String,Person> people = new HashMap();
@@ -72,13 +84,19 @@ public class ClientModel {
     }
     private void setColors(){
         Integer color = 0;
+        initializePossibleColors();
         for(String event : eventTypes){
             ClientModel.getInstance().eventTypeAndColor.put(event,color.toString());
-            color = color + 20;
-            if(color > 360){
-                color = 0;
-            }
+
         }
+    }
+    private void initializePossibleColors(){
+        possibleColors.put("Red",0);
+        possibleColors.put("Orange",25);
+        possibleColors.put("Yellow",45);
+        possibleColors.put("Green",135);
+        possibleColors.put("Blue",225);
+        possibleColors.put("Purple",315);
     }
     public Person getChild(){
         Person child = null;
@@ -121,5 +139,26 @@ public class ClientModel {
             }
         }
         return spouse;
+    }
+    public void getSideOfFamilyStarter(){
+        Person userPerson = people.get(userPersonID);
+        getSideOfFamily(userPerson.getMother(), maternalAncestors);
+        getSideOfFamily(userPerson.getFather(), paternalAncestors);
+    }
+    public void getSideOfFamily(String personID,Set<String> ancestors){
+        if(!people.containsKey(personID)){
+            return;
+        }
+        Person child = people.get(personID);
+        if (people.containsKey(child.getMother())){
+            Person mother = people.get(child.getMother());
+            ancestors.add(mother.getPersonID());
+            getSideOfFamily(mother.getPersonID(),ancestors);
+        }
+        if (people.containsKey(child.getFather())){
+            Person father = people.get(child.getFather());
+            ancestors.add(father.getPersonID());
+            getSideOfFamily(father.getPersonID(),ancestors);
+        }
     }
 }

@@ -60,6 +60,10 @@ public class LoginFragment extends Fragment {
     public MainActivity getMainActivity() {
         return mainActivity;
     }
+    public SyncTask syncTask;
+    public void initSyncTask(){
+        syncTask = new SyncTask();
+    }
 
     public void setMainActivity(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -352,6 +356,7 @@ public class LoginFragment extends Fragment {
                 //save the authToken
                 serverProxy.setAuthCode(extractAuthID(output));
                 String personID = extractPersonID(output);
+                ClientModel.getInstance().setUserPersonID(personID);
                 //get the username and password
                 String personInfo = serverProxy.person(personID,serverProxy.getAuthCode());
                 setFirstName(personInfo);
@@ -402,6 +407,7 @@ public class LoginFragment extends Fragment {
                 serverProxy.setAuthCode(extractAuthID(output));
                 //get the personID
                 String personID = extractPersonID(output);
+                ClientModel.getInstance().setUserPersonID(personID);
                 String personInfo = serverProxy.person(personID,serverProxy.getAuthCode());
                 setFirstName(personInfo);
                 setLastName(personInfo);
@@ -413,6 +419,7 @@ public class LoginFragment extends Fragment {
     }
     public class SyncTask extends AsyncTask<URL, Integer, Long> {
         private boolean invalidSync = false;
+        public boolean outsideCall = false;
         String output = "";
 
         protected Long doInBackground(URL... urls) {
@@ -434,10 +441,12 @@ public class LoginFragment extends Fragment {
             } else {
                 //makeToast("Sync Worked\nPeople Size: " + clientModel.getInstance().people.size()
                   //      + "Events Size: " + clientModel.getInstance().events.size());
-               makeToast("Firstname: " + userFirstName +
-                    "\nLastname: " + userLastName);
+                if(!outsideCall){
+                    makeToast("Firstname: " + userFirstName +
+                            "\nLastname: " + userLastName);
+                    mainActivity.startMapFrag();
+                }
             }
-            mainActivity.startMapFrag();
             //call new frag here
         }
         private void startMapFrag(){

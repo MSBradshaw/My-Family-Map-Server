@@ -38,8 +38,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
+import static android.graphics.Color.*;
 import static android.support.v7.appcompat.R.attr.icon;
 
 /**
@@ -51,6 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private static double lat;
     private static double lng;
     private static boolean isSimpleToolbar = false;
+    private boolean loaded = false;
 
     public void setMapActivity(MapActivity mapActivity) {
         this.mapActivity = mapActivity;
@@ -105,7 +110,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         setHasOptionsMenu(true);
         return mView;
     }
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(loaded){
+            mGoogleMap.clear();
+            mapTypeSettingSetter(mGoogleMap);
+            loadEventsIntoMap(mGoogleMap);
+        }
+    }
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -135,6 +148,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         MapsInitializer.initialize(getContext());
 
         mGoogleMap = googleMap;
+        loaded = true;
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener(){
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -157,7 +171,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 return true;
             }
         });
-        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+       mapTypeSettingSetter(googleMap);
         loadEventsIntoMap(googleMap);
 
         CameraPosition Liberty = CameraPosition.builder().target(new LatLng(getLat(), getLng()))
@@ -221,7 +235,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                     .position(new LatLng(latitude, longitude))
                     .title(eventID));
         }
-
+        LineDrawer lineDrawer = new LineDrawer();
+        //adds lines based on what they settings say to
+        if(Settings.getInstance().isFamily_sotry_lines()){
+            lineDrawer.drawFamilyLines(googleMap,getContext());
+        }
+        if(Settings.getInstance().isLife_story_lines()){
+            lineDrawer.drawLifeLines(googleMap,getContext());
+        }
+        if(Settings.getInstance().isSpouse_lines()){
+            lineDrawer.drawSpouseLines(googleMap,getContext());
+        }
     }
     private void changeFooterInfo(String name, String info){
         TextView personName = (TextView) mView.findViewById(R.id.person_name);
@@ -244,6 +268,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
         SettingsActivity.setMainActivity(mainActivity);
         Intent intent = new Intent(mainActivity, SettingsActivity.class);
         startActivity(intent);
+    }
+    private void mapTypeSettingSetter(GoogleMap googleMap){
+        if(Settings.getInstance().getMap_type().equals("Hybrid")){
+            googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        }else if(Settings.getInstance().getMap_type().equals("Terrain")){
+            googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        }else if(Settings.getInstance().getMap_type().equals("Satellite")){
+            googleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        }else if(Settings.getInstance().getMap_type().equals("Normal")){
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }else {
+            makeToast("Wrong Map Type");
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
     }
 
 }
