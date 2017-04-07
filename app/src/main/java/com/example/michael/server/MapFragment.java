@@ -210,8 +210,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             case R.id.search:
                 makeToast("Click");
                 return true;
-            case R.id.specific_event:
+            case R.id.filter:  //specific event meaning filter.... poor naming sorry
                 makeToast("Click Events");
+                startFilterActivity();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -267,6 +268,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private void startSettingsActivity(){
         SettingsActivity.setMainActivity(mainActivity);
         Intent intent = new Intent(mainActivity, SettingsActivity.class);
+        startActivity(intent);
+    }
+    private void startFilterActivity(){
+        FilterActivity.setMainActivity(mainActivity);
+        Intent intent = new Intent(mainActivity, FilterActivity.class);
         startActivity(intent);
     }
     private void mapTypeSettingSetter(GoogleMap googleMap){

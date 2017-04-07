@@ -8,7 +8,7 @@
         android:title="search"
         />
     <item
-        android:id="@+id/specific_event"
+        android:id="@+id/filter"
         app:showAsAction="always"
         android:icon="@drawable/ic_filter"
         android:title="filter"

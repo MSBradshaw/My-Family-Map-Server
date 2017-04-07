@@ -1,5 +1,8 @@
 package com.example.michael.server;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static android.graphics.Color.*;
 /**
  * Created by Michael on 4/4/2017.
@@ -13,6 +16,7 @@ public class Settings {
     private String family_story_lines_color = "Red";
     private String spouse_lines_color = "Red";
     private String map_type = "Normal";
+    public Map<String,Boolean> filterSettings = new HashMap();
 
     public String getMap_type() {
         return map_type;
