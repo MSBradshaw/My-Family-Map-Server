@@ -63,6 +63,9 @@ public class LineDrawer {
         //add the person's first event
         List<Event> temp = ClientModel.getInstance().personEvents.get(person.getPersonID());
         sortEvents(temp);
+        if(temp.size() == 0){
+            return;
+        }
         events.add(temp.get(0)); //adds the first event to the events list
         //connect the dots
         String color  = Settings.getInstance().getFamily_story_lines_color();

@@ -17,6 +17,20 @@ import static android.graphics.Color.*;
  */
 
 public class ClientModel {
+    private  boolean firstload = true;
+    private  boolean reload = false;
+    public  boolean isFirstload() {
+        return firstload;
+    }
+    public  void setFirstload(boolean firstload) {
+        this.firstload = firstload;
+    }
+    public  boolean isReload() {
+        return reload;
+    }
+    public  void setReload(boolean reload) {
+        this.reload = reload;
+    }
     public  Map<String, Integer> possibleColors = new HashMap();
     private static Person currentPerson;
     public static Person getCurrentPerson() {
@@ -44,7 +58,7 @@ public class ClientModel {
     }
     public Map<String,Person> people = new HashMap();
     public Map<String,Event> events = new HashMap();
-    private Map<String,Event> eventsSuper = new HashMap();
+    public Map<String,Event> eventsSuper = new HashMap();
     public Map<String,List<Event>> personEvents = new HashMap();
     public Set<String> eventTypes;
     public Map<String,String> eventTypeAndColor = new HashMap();
@@ -65,16 +79,17 @@ public class ClientModel {
     }
     public void generateColorandEventList(){
         //get set of events
-        getEventsTypes();
         setColors();
         fillpersonEvents();
         //set colors for each
     }
     private void getEventsTypes(){
-        eventTypes = new HashSet();
-        for(String key : events.keySet()){
-            String eventtype = events.get(key).getDescription();
-            eventTypes.add(eventtype);
+        if(firstload || reload) {
+            eventTypes = new HashSet();
+            for (String key : eventsSuper.keySet()) {
+                String eventtype = events.get(key).getDescription();
+                eventTypes.add(eventtype);
+            }
         }
     }
     private void setColors(){
@@ -138,7 +153,9 @@ public class ClientModel {
     public void getSideOfFamilyStarter(){
         Person userPerson = people.get(userPersonID);
         getSideOfFamily(userPerson.getMother(), maternalAncestors);
+        maternalAncestors.add(userPerson.getMother());
         getSideOfFamily(userPerson.getFather(), paternalAncestors);
+        paternalAncestors.add(userPerson.getFather());
     }
     public void getSideOfFamily(String personID,Set<String> ancestors){
         if(!people.containsKey(personID)){
@@ -156,19 +173,162 @@ public class ClientModel {
             getSideOfFamily(father.getPersonID(),ancestors);
         }
     }
-    public void setEventsSuper(){
-        eventsSuper = events;
+    public void reloadEventsFromSuperEvents(){
+        if(firstload || reload){
+            events.putAll(eventsSuper);
+            getEventsTypes();
+        }
+        firstload = false;
+        reload = false;
     }
     public void filterEvents(){
-        //filter out mother
-        //filter out father
-        //filter out males
-        //filter out females
-        //filter out events
+        filterOutEvents();
+        if(!Settings.getInstance().isMotherSideOn()){
+            filterOutMotherSide();
+        }
+        if(!Settings.getInstance().isFatherSideOn()){
+            filterOutFatherSide();
+        }
+        if(!Settings.getInstance().isFemalesOn()){
+            filterOutWomen();
+        }
+        if(!Settings.getInstance().isMalesOn()){
+            filterOutMen();
+        }
     }
     public void filterOutMotherSide(){
         getSideOfFamilyStarter();
         //remove the maternal ancestors
+        List<String> deleteMe = new ArrayList();
+        for(String key:events.keySet()){
+            Event e = events.get(key);
+            if(maternalAncestors.contains(e.getPersonID())){
+                //mark the event for death
+                deleteMe.add(key);
+            }
+        }
+        for(String key:deleteMe){
+            events.remove(key);
+        }
     }
+    public void filterOutFatherSide(){
+        getSideOfFamilyStarter();
+        //remove the paternal ancestors
+        List<String> deleteMe = new ArrayList();
+        for(String key:events.keySet()){
+            Event e = events.get(key);
+            if(paternalAncestors.contains(e.getPersonID())){
+                //mark the event for death
+                deleteMe.add(key);
+            }
+        }
+        for(String key:deleteMe){
+            events.remove(key);
+        }
+    }
+    public void filterOutMen(){
+        List<String> deleteMe = new ArrayList();
+        //get list of men
+        List<String> men = new ArrayList();
+        for(String key:people.keySet()){
+            if(people.get(key).getGender().equals("m") || people.get(key).getGender().equals("M")){
+                men.add(key);
+            }
+        }
+        for(String key:events.keySet()){
+            Event e = events.get(key);
+            if(men.contains(e.getPersonID())){
+                //mark the event for death
+                deleteMe.add(key);
+            }
+        }
+        for(String key:deleteMe){
+            events.remove(key);
+        }
+    }
+    public void filterOutWomen(){
+        List<String> deleteMe = new ArrayList();
+        //get list of women
+        List<String> women = new ArrayList();
+        for(String key:people.keySet()){
+            if(people.get(key).getGender().equals("f") || people.get(key).getGender().equals("F")){
+                women.add(key);
+            }
+        }
+        for(String key:events.keySet()){
+            Event e = events.get(key);
+            if(women.contains(e.getPersonID())){
+                //mark the event for death
+                deleteMe.add(key);
+            }
+        }
+        for(String key:deleteMe){
+            events.remove(key);
+        }
+    }
+    public void filterOutEvents(){
+        List<String> deleteMe = new ArrayList();
+        setReload(true);
+        reloadEventsFromSuperEvents();
+        Settings.getInstance().loadFilterSettings();
+        //get list of women
+        if(Settings.getInstance().filterSettings == null){
+            return;
+        }
+        for(String key:events.keySet()){
+            Event e = events.get(key);
+            if(Settings.getInstance().filterSettings.containsKey(e.getDescription())){
+                if(!Settings.getInstance().filterSettings.get(e.getDescription())){
+                    deleteMe.add(key);
+                }
+            }
 
+        }
+        for(String key:deleteMe){
+            events.remove(key);
+        }
+    }
+    public List<Person> searchPeople(String word){
+        List<Person> searchPeople = new ArrayList();
+        for(String key:people.keySet()){
+            if(personContains(people.get(key),word)){
+                searchPeople.add(people.get(key));
+            }
+        }
+        return searchPeople;
+    }
+    public List<Event> searchEvents(String word){
+        //search the super set
+        List<Event> searchEvents = new ArrayList();
+        for(String key:events.keySet()){
+            if(eventContain(events.get(key),word)){
+                searchEvents.add(events.get(key));
+            }
+        }
+        return searchEvents;
+    }
+    private boolean personContains(Person person, String word){
+        if(person.getFirstname().contains(word)){
+            return true;
+        }
+        if(person.getLastname().contains(word)){
+            return true;
+        }
+        return false;
+    }
+    private boolean eventContain(Event event, String word){
+        if(event.getDescription().contains(word)){
+            return true;
+        }
+        if(event.getCountry().contains(word)){
+            return true;
+        }
+        if(event.getCity().contains(word)){
+            return true;
+        }
+        if(event.getYear().contains(word)){
+            return true;
+        }
+        return false;
+    }
 }

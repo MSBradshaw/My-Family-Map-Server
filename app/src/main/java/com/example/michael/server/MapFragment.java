@@ -102,6 +102,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     public void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        //initilize the event and color list
+        ClientModel.getInstance().generateColorandEventList();
+        ClientModel.getInstance().filterEvents();
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -113,6 +117,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onResume() {
         super.onResume();
+        ClientModel.getInstance().filterEvents();
+        int size  =  ClientModel.getInstance().events.size();
         if(loaded){
             mGoogleMap.clear();
             mapTypeSettingSetter(mGoogleMap);
@@ -129,9 +135,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 //start new activity
                 makeToast("It clicked");
                 startPersonActivity();
-
-
-
             }
         });
         mMapView = (MapView) mView.findViewById(R.id.map);
@@ -171,11 +174,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 return true;
             }
         });
-       mapTypeSettingSetter(googleMap);
+        mapTypeSettingSetter(googleMap);
         loadEventsIntoMap(googleMap);
 
         CameraPosition Liberty = CameraPosition.builder().target(new LatLng(getLat(), getLng()))
-                .zoom(16).bearing(0).tilt(45).build();
+                .zoom(4).bearing(0).tilt(45).build();
         googleMap.moveCamera(CameraUpdateFactory.newCameraPosition(Liberty));
     }
     @Override
@@ -204,14 +207,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 getContext().startActivity(intent);
                 return true;
             case R.id.settings:
-                //start the settings activity
                 startSettingsActivity();
                 return true;
             case R.id.search:
-                makeToast("Click");
+                startSearchActivity();
                 return true;
-            case R.id.filter:  //specific event meaning filter.... poor naming sorry
-                makeToast("Click Events");
+            case R.id.filter:
                 startFilterActivity();
                 return true;
             default:
@@ -273,6 +274,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     private void startFilterActivity(){
         FilterActivity.setMainActivity(mainActivity);
         Intent intent = new Intent(mainActivity, FilterActivity.class);
+        startActivity(intent);
+    }
+    private void startSearchActivity(){
+        SearchActivity.setMainActivity(mainActivity);
+        Intent intent = new Intent(mainActivity, SearchActivity.class);
         startActivity(intent);
     }
     private void mapTypeSettingSetter(GoogleMap googleMap){

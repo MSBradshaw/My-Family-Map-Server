@@ -2,135 +2,128 @@ package com.example.michael.server;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
+import android.media.Image;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.Model.Event;
 import com.example.Model.Person;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Created by Michael on 3/30/2017.
+ * Created by Michael on 4/8/2017.
  */
 
-public class PersonActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity {
+    private EditText searchField;
+    private String searchString = "";
+    private ImageView searchButton;
+    private List<Person> people;
+    private List<Event> events;
     private static MainActivity mainActivity;
-
     public static void setMainActivity(MainActivity mainActivity) {
-        PersonActivity.mainActivity = mainActivity;
+        SearchActivity.mainActivity = mainActivity;
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.person_activity);
-
-        FragmentManager fm = getSupportFragmentManager();
-        TextView firstname = (TextView) findViewById(R.id.firstname);
-        firstname.setText(ClientModel.getCurrentPerson().getFirstname());
-        TextView lastname = (TextView) findViewById(R.id.lastname);
-        lastname.setText(ClientModel.getCurrentPerson().getLastname());
-        RecyclerView viewEvents = (RecyclerView) findViewById(R.id.events);
-        RecyclerView viewRelatives = (RecyclerView) findViewById(R.id.family);
-        TextView gender = (TextView) findViewById(R.id.gender);
-        ImageView familyDropDown = (ImageView) findViewById(R.id.relatives_dropdown);
-        familyDropDown.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.search_activity);
+        final EditText editText = (EditText) findViewById(R.id.search_field);
+        View view = findViewById(R.id.search_activity);
+        ImageView imageView = (ImageView) findViewById(R.id.search_button);
+        initializeSearchButton(imageView);
+        initilizeSearchField(editText);
+    }
+    private void initilizeSearchField(final EditText editText){
+        editText.addTextChangedListener(new TextWatcher(){
             @Override
-            public void onClick(View v) {
-                RecyclerView rc = (RecyclerView) findViewById(R.id.family);
-                if(rc.getVisibility() == View.VISIBLE){
-                    rc.setVisibility(View.GONE);
-                }else{
-                    rc.setVisibility(View.VISIBLE);
-                }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchString = editText.getText().toString();
             }
         });
-        ImageView eventsDropDown = (ImageView) findViewById(R.id.life_events_dropdown);
-        eventsDropDown.setOnClickListener(new View.OnClickListener() {
+    }
+    private void initializeSearchButton(ImageView imageView){
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RecyclerView rc = (RecyclerView) findViewById(R.id.events);
-                if(rc.getVisibility() == View.VISIBLE){
-                    rc.setVisibility(View.GONE);
-                }else{
-                    rc.setVisibility(View.VISIBLE);
+                makeToast("Click Search");
+                if(searchString.length() == 0){
+                    makeToast("You must enter something to search for");
+                    return;
                 }
+                //run the search functions and have them return two lists people and events
+                events = ClientModel.getInstance().searchEvents(searchString);
+                //apply the events to a recycler view
+                RecyclerView eventsRecycler = (RecyclerView) findViewById(R.id.search_events);
+                EventAdapter eventAdapter = new EventAdapter(events,getBaseContext());
+                eventsRecycler.setAdapter(eventAdapter);
+                eventsRecycler.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+
+                people = ClientModel.getInstance().searchPeople(searchString);
+                RecyclerView personRecycler = (RecyclerView) findViewById(R.id.search_people);
+                FamilyAdapter personAdapter = new FamilyAdapter(people,getBaseContext());
+                personRecycler.setAdapter(personAdapter);
+                personRecycler.setLayoutManager(new LinearLayoutManager(getBaseContext()));
             }
         });
-        if(ClientModel.getCurrentPerson().getGender().equals("m") || ClientModel.getCurrentPerson().getGender().equals("M")){
-            gender.setText("Male");
-        }else{
-            gender.setText("Female");
-        }
-        int size = ClientModel.getInstance().personEvents.size();
-        EventAdapter personAdapter = new EventAdapter(ClientModel.getInstance().personEvents.get(ClientModel.getCurrentPerson().getPersonID()),this);
-        viewEvents.setAdapter(personAdapter);
-        viewEvents.setLayoutManager(new LinearLayoutManager(this));
-        //get the familyPerson list and Relations
-        List<Person> family = new ArrayList();
-        List<String> relations =  new ArrayList();
-        generatePeopleAndRelations(family, relations);
-        FamilyAdapter familyAdapter = new FamilyAdapter(family,relations,this);
-        viewRelatives.setAdapter(familyAdapter);
-        viewRelatives.setLayoutManager(new LinearLayoutManager(this));
-
-
     }
-    private void generatePeopleAndRelations(List<Person> people, List<String> relations){
-        Person mom = ClientModel.getInstance().getMother();
-        Person dad = ClientModel.getInstance().getFather();
-        Person kid = ClientModel.getInstance().getChild();
-        Person spouse = ClientModel.getInstance().getSpouse();
-        if(mom != null){
-            people.add(mom);
-            relations.add("Mother");
-        }
-        if(dad != null){
-            people.add(dad);
-            relations.add("Father");
-        }
-        if(kid != null){
-            people.add(kid);
-            relations.add("Child");
-        }
-        if(spouse != null) {
-            people.add(spouse);
-            if (spouse.getGender().equals("m") || spouse.getGender().equals("M")) {
-                relations.add("Husband");
-            } else {
-                relations.add("Wife");
-            }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.simple_toolbar, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.back:
+                //function of stuff to do
+                finish();
+                return true;
+            case R.id.double_back:
+                //other function
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                this.startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
-
-    private class EventAdapter extends RecyclerView.Adapter<PersonActivity.EventHolder> {
+    private void makeToast(String message){
+        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+    }
+    private class EventAdapter extends RecyclerView.Adapter<SearchActivity.EventHolder> {
 
         private List<Event> mEvents;
         private Context context;
 
-        public EventAdapter(List<Event> crimes, Context context) {
-            mEvents = crimes;
+        public EventAdapter(List<Event> events, Context context) {
+            mEvents = events;
             sortEvents();
             this.context = context;
         }
@@ -140,24 +133,6 @@ public class PersonActivity extends AppCompatActivity {
             //death last
             //sorted by date or ABC if no date
             basicSort(temp);
-            //order the birth and death dates
-            boolean changed = true;
-            while(changed) {
-                changed = false;
-                for (int i = 0; i < temp.size(); i++) {
-                    if (temp.get(i).getDescription().toLowerCase().equals("birth") && i != 0) {
-                        Event e = temp.get(i);
-                        temp.remove(i);
-                        temp.add(0, e);
-                        changed = true;
-                    } else if (temp.get(i).getDescription().toLowerCase().equals("death") && i != temp.size()-1) {
-                        Event e = temp.get(i);
-                        temp.remove(i);
-                        temp.add(temp.size() - 1, e);
-                        changed = true;
-                    }
-                }
-            }
             mEvents = temp;
         }
         private void basicSort(List<Event> temp){
@@ -191,14 +166,14 @@ public class PersonActivity extends AppCompatActivity {
             }
         }
         @Override
-        public PersonActivity.EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public SearchActivity.EventHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             layoutInflater.inflate(R.layout.single_person_event,parent,false);
-            return new PersonActivity.EventHolder(layoutInflater, parent);
+            return new SearchActivity.EventHolder(layoutInflater, parent);
         }
 
         @Override
-        public void onBindViewHolder(PersonActivity.EventHolder holder, int position) {
+        public void onBindViewHolder(SearchActivity.EventHolder holder, int position) {
             Event event = mEvents.get(position);
             holder.bind(event);
 
@@ -253,21 +228,19 @@ public class PersonActivity extends AppCompatActivity {
             //start new So got map activity focused on that event
         }
     }
-    private class FamilyAdapter extends RecyclerView.Adapter<PersonActivity.FamilyHolder>{
+    private class FamilyAdapter extends RecyclerView.Adapter<SearchActivity.FamilyHolder>{
         private List<Person> familyPerson;
-        private List<String> familyRelation;
         private Context context;
 
-        public FamilyAdapter(List<Person> fam, List<String> rel, Context context) {
+        public FamilyAdapter(List<Person> fam, Context context) {
             familyPerson = fam;
-            familyRelation = rel;
             this.context = context;
         }
         @Override
-        public PersonActivity.FamilyHolder onCreateViewHolder(ViewGroup parent, int viewType){
+        public SearchActivity.FamilyHolder onCreateViewHolder(ViewGroup parent, int viewType){
             LayoutInflater layoutInflater = LayoutInflater.from(context);
             layoutInflater.inflate(R.layout.single_person_event,parent,false);
-            return new PersonActivity.FamilyHolder(layoutInflater, parent);
+            return new SearchActivity.FamilyHolder(layoutInflater, parent);
         }
         @Override
         public int getItemCount() {
@@ -275,39 +248,29 @@ public class PersonActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(PersonActivity.FamilyHolder holder, int position) {
+        public void onBindViewHolder(SearchActivity.FamilyHolder holder, int position) {
             Person person = familyPerson.get(position);
-            String relation = familyRelation.get(position);
-            holder.bind(person, relation);
+            holder.bind(person);
         }
     }
     private class FamilyHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView name;
-        private TextView relation;
         private Person person;
-        public void bind(Person person, String relationString){
+        public void bind(Person person){
             this.person = person;
             name.setText(person.getFirstname() + " " + person.getLastname());
-            relation.setText(relationString);
             if(person.getGender().equals("m") || person.getGender().equals("M")){
                 ImageView genderIcon = (ImageView) itemView.findViewById(R.id.person_icon);
                 genderIcon.setImageResource(R.drawable.ic_father);
-                if(relationString.equals("Child")){
-                    genderIcon.setImageResource(R.drawable.ic_child_boy);
-                }
             }else{
                 ImageView genderIcon = (ImageView) itemView.findViewById(R.id.person_icon);
                 genderIcon.setImageResource(R.drawable.ic_mother);
-                if(relationString.equals("Child")){
-                    genderIcon.setImageResource(R.drawable.ic_child_girl);
-                }
             }
         }
         public FamilyHolder(LayoutInflater inflater, ViewGroup parent){
             super(inflater.inflate(R.layout.single_person, parent, false));
             itemView.setOnClickListener(this);
             name = (TextView) itemView.findViewById(R.id.name);
-            relation = (TextView) itemView.findViewById(R.id.relation);
         }
         @Override
         public void onClick(View view) {
@@ -317,36 +280,6 @@ public class PersonActivity extends AppCompatActivity {
             PersonActivity.setMainActivity(mainActivity);
             Intent intent = new Intent(mainActivity, PersonActivity.class);
             startActivity(intent);
-        }
-    }
-    private void makeToast(String message){
-        Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
-    }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.simple_toolbar, menu);
-        return true;
-    }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle item selection
-        switch (item.getItemId()) {
-            case R.id.back:
-                //function of stuff to do
-                finish();
-                makeToast("Nice Benny");
-                return true;
-            case R.id.double_back:
-                //other function
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
-                        Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                this.startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 }

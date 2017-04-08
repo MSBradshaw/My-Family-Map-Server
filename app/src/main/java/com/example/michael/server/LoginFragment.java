@@ -445,7 +445,7 @@ public class LoginFragment extends Fragment {
                     mainActivity.startMapFrag();
                 }
             }
-            ClientModel.getInstance().setEventsSuper();
+            ClientModel.getInstance().reloadEventsFromSuperEvents();
         }
         private void startMapFrag(){
             FragmentManager fm = getFragmentManager();
@@ -476,7 +476,7 @@ public class LoginFragment extends Fragment {
                 eventsTemp = (Event[]) gson.fromJson(output, Event[].class);
                 if(eventsTemp != null && eventsTemp.length != 0){
                     for(int i=0; i < eventsTemp.length ;i++){
-                        clientModel.getInstance().events.put(eventsTemp[i].getEventID()
+                        clientModel.getInstance().eventsSuper.put(eventsTemp[i].getEventID()
                                 ,eventsTemp[i]);
                     }
                 }

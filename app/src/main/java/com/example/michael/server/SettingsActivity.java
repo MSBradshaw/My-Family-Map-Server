@@ -113,6 +113,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 makeToast("Resyncing");
+                ClientModel.getInstance().setReload(true);
                 LoginFragment loginFragment = new LoginFragment();
                 loginFragment.initSyncTask();
                 loginFragment.syncTask.outsideCall = true;

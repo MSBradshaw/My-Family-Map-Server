@@ -111,13 +111,23 @@ public class Settings {
     }
 
     private static Settings instance = null;
+
     protected Settings() {
         // Exists only to defeat instantiation.
     }
+
     public static Settings getInstance() {
         if(instance == null) {
             instance = new Settings();
         }
         return instance;
+    }
+
+    public void loadFilterSettings(){
+        if(filterSettings.size() == 0){
+            for(String type : ClientModel.getInstance().eventTypes){
+                filterSettings.put(type,true);
+            }
+        }
     }
 }
