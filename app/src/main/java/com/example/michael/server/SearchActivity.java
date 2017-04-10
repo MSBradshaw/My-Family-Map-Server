@@ -92,7 +92,7 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.simple_toolbar, menu);
+        inflater.inflate(R.menu.settings_toolbar, menu);
         return true;
     }
     @Override

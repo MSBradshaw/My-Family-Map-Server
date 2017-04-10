@@ -20,6 +20,13 @@ public class ServerProxy {
     public String getAuthCode() {
         return authCode;
     }
+    public static String url;
+    public ServerProxy(String host, String port){
+        url = "http://" + host + ":" + port + "/";
+    }
+    public ServerProxy(){
+
+    }
 
     public void setAuthCode(String authCode) {
         this.authCode = authCode;

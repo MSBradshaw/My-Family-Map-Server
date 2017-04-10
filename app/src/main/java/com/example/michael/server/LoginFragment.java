@@ -3,6 +3,7 @@ package com.example.michael.server;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -212,12 +213,14 @@ public class LoginFragment extends Fragment {
                 //male = 2131427423
                 //female = 2131427424
                 RadioButton genderButton = (RadioButton) group.findViewById(checkedId);
+                RadioButton male = (RadioButton) group.findViewById(R.id.male);
+                RadioButton female = (RadioButton) group.findViewById(R.id.female);
                 if(null!=genderButton && checkedId > -1){
-                    if(checked.equals(2131427423)){
+                    if(male.isChecked()){
                         mUser.setGender("m");
                         makeToast("Man");
-                    }else{
-                        mUser.setGender("w");
+                    }else if(female.isChecked()){
+                        mUser.setGender("f");
                         makeToast("Woman");
                     }
                 }else{
