@@ -25,7 +25,6 @@ public class ServerProxy {
         url = "http://" + host + ":" + port + "/";
     }
     public ServerProxy(){
-
     }
 
     public void setAuthCode(String authCode) {
@@ -41,17 +40,17 @@ public class ServerProxy {
      *
      */
     public String register(User user) throws IOException {
-        return genericFunction(user,"http://10.0.2.2:8080/user/register");
+        return genericFunction(user,url + "user/register");
     }
 
     public String login(User user){
-        return genericFunction(user,"http://10.0.2.2:8080/user/login");
+        return genericFunction(user,url + "user/login");
     }
     public String genericFunction(Object user, String urlStr){
         try {
             Authorization authorization = null;
-            URL url = new URL(urlStr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL urlOb = new URL(urlStr);
+            HttpURLConnection connection = (HttpURLConnection) urlOb.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.connect();
@@ -89,13 +88,13 @@ public class ServerProxy {
      *
      */
     public String clear(){
-        return genericFunction("http://localhost:8080/clear");
+        return genericFunction(url + "clear");
     }
     public String genericFunction(String urlstr){
         try {
             Authorization authorization = null;
-            URL url = new URL(urlstr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL urlOb = new URL(urlstr);
+            HttpURLConnection connection = (HttpURLConnection) urlOb.openConnection();
             connection.setRequestMethod("POST");
             connection.addRequestProperty("Authorization", "afj232hj2332");
             connection.setDoOutput(true);
@@ -147,8 +146,8 @@ public class ServerProxy {
         try {
             Authorization authorization = null;
             String urlStr = username + "/" + gen;
-            URL url = new URL("http://localhost:8080/fill/" + urlStr);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL urlOb = new URL(this.url + "fill/" + urlStr);
+            HttpURLConnection connection = (HttpURLConnection) urlOb.openConnection();
             connection.setRequestMethod("POST");
             connection.setDoOutput(true);
             connection.connect();
@@ -176,7 +175,7 @@ public class ServerProxy {
     }
     public String load(User[] users, Person[] persons, Event[] events){
         LoadData data =  new LoadData(users,persons,events);
-        return genericFunction(data,"http://localhost:8080/load");
+        return genericFunction(data,url + "load");
     }
 
     /**
@@ -191,7 +190,7 @@ public class ServerProxy {
         if(!personID.equals("")){
             personID = "/" + personID;
         }
-        String inputUrl = "http://10.0.2.2:8080/person" + personID;
+        String inputUrl = url + "person" + personID;
         return genericEventoPerson(inputUrl,authID);
     }
     private String genericEventoPerson(String inputUrl, String authID){
@@ -239,7 +238,7 @@ public class ServerProxy {
      */
     public String event(String eventId, String authID){
         Person person = new Person();
-        String inputUrl = "http://10.0.2.2:8080/event" + eventId;
+        String inputUrl = url + "event" + eventId;
         return genericEventoPerson(inputUrl,authID);
     }
 

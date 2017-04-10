@@ -253,7 +253,8 @@ public class LoginFragment extends Fragment {
         }else{
             try {
                 LoginTask loginTask = new LoginTask();
-                loginTask.execute(new URL("http://localhost:8080/"));
+                ServerProxy serverProxy = new ServerProxy(mHost,mPort);
+                loginTask.execute(new URL(serverProxy.url));
                 //load the people
                 if(badToastPopped){
                     return;
@@ -295,7 +296,8 @@ public class LoginFragment extends Fragment {
         }else {
             try {
                 RegisterTask registerTask = new RegisterTask();
-                registerTask.execute(new URL("http://localhost:8080/"));
+                ServerProxy serverProxy = new ServerProxy(mHost,mPort);
+                registerTask.execute(new URL(serverProxy.url));
                 //load the people
                 if(badToastPopped){
                     return;
@@ -336,13 +338,13 @@ public class LoginFragment extends Fragment {
             }
             SyncTask syncTask = new SyncTask();
             try {
-                syncTask.execute(new URL("http://localhost:8080/"));
+                syncTask.execute(new URL(ServerProxy.url));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
         private void registerBackGroundTask(){
-            ServerProxy serverProxy = new ServerProxy();
+            ServerProxy serverProxy = new ServerProxy(mHost,mPort);
             try {
                 output = serverProxy.register(mUser);
             } catch (IOException e) {
@@ -393,13 +395,13 @@ public class LoginFragment extends Fragment {
             }
             SyncTask syncTask = new SyncTask();
             try {
-                syncTask.execute(new URL("http://localhost:8080/"));
+                syncTask.execute(new URL(ServerProxy.url));
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
         }
         private void loginBackGroundTask(){
-            ServerProxy serverProxy = new ServerProxy();
+            ServerProxy serverProxy = new ServerProxy(mHost,mPort);
             output = serverProxy.login(mUser);
             if(!checkForAuthToken(output)){
                 //bad
@@ -423,8 +425,14 @@ public class LoginFragment extends Fragment {
     public class SyncTask extends AsyncTask<URL, Integer, Long> {
         private boolean invalidSync = false;
         public boolean outsideCall = false;
+        public boolean resync = false;
         String output = "";
+        public SyncTask(boolean resync){
+            this.resync = resync;
+        }
+        public SyncTask(){
 
+        }
         protected Long doInBackground(URL... urls) {
             long l = 0;
             //what to do in the back ground
@@ -459,7 +467,12 @@ public class LoginFragment extends Fragment {
                        .commit();
         }
         private void syncBackGroundTask(){
-            ServerProxy serverProxy = new ServerProxy();
+            ServerProxy serverProxy = null;
+            if(resync){
+                serverProxy = new ServerProxy();
+            }else{
+                serverProxy = new ServerProxy(mHost,mPort);
+            }
             output = serverProxy.person("",serverProxy.getAuthCode());
             loadOutputPerson();
             output = serverProxy.event("",serverProxy.getAuthCode());

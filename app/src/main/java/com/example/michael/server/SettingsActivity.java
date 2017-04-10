@@ -20,6 +20,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.Model.ServerProxy;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -68,7 +70,7 @@ public class SettingsActivity extends AppCompatActivity {
         final Switch switchLife = (Switch) findViewById(R.id.life_switch);
         switchLife.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                makeToast("Give me Life");
+                //makeToast("Give me Life");
                 if(switchLife.getText().equals("OFF ")){
                     switchLife.setText("ON");
                     Settings.getInstance().setLife_story_lines(true);
@@ -83,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
         final Switch switchFamily = (Switch) findViewById(R.id.family_switch);
         switchFamily.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                makeToast("Family's Can Be together forever");
+               // makeToast("Family's Can Be together forever");
                 if(switchFamily.getText().equals("OFF ")){
                     switchFamily.setText("ON");
                     Settings.getInstance().setFamily_sotry_lines(true);
@@ -97,7 +99,7 @@ public class SettingsActivity extends AppCompatActivity {
         final Switch switchSpouse = (Switch) findViewById(R.id.spouse_switch);
         switchSpouse.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                makeToast("Spouse Soup");
+               // makeToast("Spouse Soup");
                 if(switchSpouse.getText().equals("OFF ")){
                     switchSpouse.setText("ON");
                     Settings.getInstance().setSpouse_lines(true);
@@ -113,12 +115,13 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 makeToast("Resyncing");
-                ClientModel.getInstance().setReload(true);
+                ClientModel.getInstance().destroyTheData();
                 LoginFragment loginFragment = new LoginFragment();
                 loginFragment.initSyncTask();
                 loginFragment.syncTask.outsideCall = true;
                 try{
-                    loginFragment.syncTask.execute(new URL("http://localhost:8080/"));
+                    loginFragment.syncTask.resync = true;
+                    loginFragment.syncTask.execute(new URL(ServerProxy.url));
                 }catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -130,6 +133,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 makeToast("Log out");
+                //clear all the info
+                Settings.getInstance().destryoTheData();
                 //end everything thing and start a new fragment
                 Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -184,7 +189,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // your code here
-                makeToast("Toast");
                 if(type.equals("life")){
                     Settings.getInstance().setLife_story_lines_color((String) spinner.getSelectedItem());
                 }else if(type.equals("family")){

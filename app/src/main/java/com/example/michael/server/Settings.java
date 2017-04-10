@@ -130,4 +130,7 @@ public class Settings {
             }
         }
     }
+    public void destryoTheData(){
+        instance = null;
+    }
 }

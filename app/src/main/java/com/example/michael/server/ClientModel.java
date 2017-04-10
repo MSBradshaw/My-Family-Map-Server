@@ -49,7 +49,7 @@ public class ClientModel {
         }
         return instance;
     }
-    private String userPersonID;
+    private static String userPersonID;
     public String getUserPersonID() {
         return userPersonID;
     }
@@ -330,5 +330,9 @@ public class ClientModel {
             return true;
         }
         return false;
+    }
+    public void destroyTheData(){
+        instance = null;
+        instance = new ClientModel();
     }
 }

@@ -134,6 +134,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             public void onClick(View v) {
                 //start new activity
                 makeToast("It clicked");
+                TextView textView = (TextView) mView.findViewById(R.id.person_name);
+                if(textView.getText().equals("Click on a marker")){
+                    return;
+                }
                 startPersonActivity();
             }
         });
@@ -167,6 +171,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                         ", " + event.getCountry() + " (" + event.getYear() + ")";
                 //get the person info
                 //this code below replaces the two fields with the right what ever info you give it
+                ImageView imageView = (ImageView) mView.findViewById(R.id.footer_img);
+                if(event.getDescription().equals("birth")){
+                    imageView.setImageResource(R.mipmap.birth);
+                }else if(event.getDescription().equals("death")){
+                    imageView.setImageResource(R.mipmap.death);
+                }else if(event.getDescription().equals("marriage")){
+                    imageView.setImageResource(R.drawable.marriage);
+                }else{
+                    imageView.setImageResource(R.drawable.ic_event);
+                }
                 changeFooterInfo(name,eventStr);
                 //add an icon to the footer
 

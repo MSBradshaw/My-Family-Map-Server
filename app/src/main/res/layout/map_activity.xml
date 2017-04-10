@@ -17,7 +17,7 @@
         android:background="@color/colorFooter"
         android:layout_height="100dp">
 
-        <IconButton
+        <ImageView
             android:id="@+id/footer_img"
             android:layout_gravity="center"
             android:layout_width="wrap_content"

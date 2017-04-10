@@ -34,7 +34,7 @@ public class ProxyTest {
         try {
             String[] args = new String[1];
             args[0] = "8080";
-            serverProxy = new ServerProxy();
+            serverProxy = new ServerProxy("localhost","8080");
           //  Server server = new Server();
             //server.main(args);
         }catch (Exception e){
