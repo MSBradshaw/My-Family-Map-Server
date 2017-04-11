@@ -7,6 +7,7 @@ import com.example.Model.Event;
 import com.example.Model.Person;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -17,14 +18,26 @@ import java.util.List;
  */
 
 public class LineDrawer {
+    public static List<Polyline> lines = new ArrayList();
     public void drawLine(Event one, Event two, GoogleMap map, Context context, int color){
-        PolylineOptions line=
-                new PolylineOptions().add(new LatLng(Double.parseDouble(one.getLatitude()),
-                        Double.parseDouble(one.getLongitude())),
+        Polyline liner = map.addPolyline(new PolylineOptions()
+                .add(new LatLng(Double.parseDouble(one.getLatitude()),
+                                Double.parseDouble(one.getLongitude())),
                         new LatLng(Double.parseDouble(two.getLatitude()),
-                        Double.parseDouble(two.getLongitude())))
-                        .width(5).color(context.getResources().getColor(color));
-        map.addPolyline(line);
+                                Double.parseDouble(two.getLongitude())))
+                .width(5)
+                .color(context.getResources().getColor(color)));
+        lines.add(liner);
+    }
+    public void drawLine(Event one, Event two, GoogleMap map, Context context, int color, int size){
+        Polyline liner = map.addPolyline(new PolylineOptions()
+                .add(new LatLng(Double.parseDouble(one.getLatitude()),
+                                Double.parseDouble(one.getLongitude())),
+                        new LatLng(Double.parseDouble(two.getLatitude()),
+                                Double.parseDouble(two.getLongitude())))
+                .width(size)
+                .color(context.getResources().getColor(color)));
+        lines.add(liner);
     }
     public void drawFamilyLines(GoogleMap googleMap, Context context){
         //get all of their relatives first events
@@ -70,6 +83,52 @@ public class LineDrawer {
         //connect the dots
         String color  = Settings.getInstance().getFamily_story_lines_color();
         dotconnector(googleMap,context,events,color);
+        if(dad!=null) {
+            drawPastGenerations(googleMap, context, dad, 4);
+        }
+        if(mom!=null) {
+            drawPastGenerations(googleMap, context, mom, 4);
+        }
+    }
+    private void drawPastGenerations(GoogleMap googleMap, Context context, Person person, int size){
+        List<Person> family = new ArrayList();
+        Person mom = getMother(person);
+        Person dad = getFather(person);
+        if(mom != null){
+            family.add(mom);
+        }
+        if(dad != null){
+            family.add(dad);
+        }
+        if(family.size() == 0){
+            return;
+        }
+        //get each family member's first event
+        List<Event> events = new ArrayList();
+        for(Person p : family){
+            List<Event> temp = ClientModel.getInstance().personEvents.get(p.getPersonID());
+            if(temp.size()>0){
+                sortEvents(temp);
+                events.add(temp.get(0)); //adds the first event to the events list
+            }
+        }
+        //add the person's first event
+        List<Event> temp = ClientModel.getInstance().personEvents.get(person.getPersonID());
+        sortEvents(temp);
+        if(temp.size() == 0){
+            return;
+        }
+        events.add(temp.get(0)); //adds the first event to the events list
+        //connect the dots
+        String color  = Settings.getInstance().getFamily_story_lines_color();
+        dotconnector(googleMap,context,events,color);
+        if(dad!=null) {
+            drawPastGenerations(googleMap, context, dad, size - 1);
+        }
+        if(mom!=null) {
+            drawPastGenerations(googleMap, context, mom, size - 1);
+        }
+
     }
     public void drawLifeLines(GoogleMap googleMap, Context context){
         //draw lines for each person chronilogically
@@ -101,6 +160,9 @@ public class LineDrawer {
     }
     private Event getFirstEvent(Person person){
         Event event =  null;
+        if(person ==null){
+            return null;
+        }
         List<Event> events = ClientModel.getInstance().personEvents.get(person.getPersonID());
         if(events.size() == 0){
             return null;
@@ -114,6 +176,13 @@ public class LineDrawer {
             Event one = events.get(i);
             Event two = events.get(i+1);
             drawLine(one,two,googleMap, context,getColor(color));
+        }
+    }
+    private void dotconnector(GoogleMap googleMap, Context context, List<Event> events, String color, int size){
+        for(int i =0; i < events.size()-1;i++){
+            Event one = events.get(i);
+            Event two = events.get(i+1);
+            drawLine(one,two,googleMap, context,getColor(color), size);
         }
     }
     private int getColor(String color){
@@ -220,5 +289,26 @@ public class LineDrawer {
             }
         }
         return dad;
+    }
+    public void drawSinglePersonStuff(GoogleMap googleMap, Context context){
+        if(Settings.getInstance().isLife_story_lines()){
+            List<Event> events = ClientModel.getInstance().personEvents.get(ClientModel.getCurrentPerson().getPersonID());
+                    //draw the lines for that person's event
+            //ClientModel.getInstance().personEvents.get(ClientModel.getCurrentPerson().getPersonID())
+            basicSort(events);
+            dotconnector(googleMap,context,events,Settings.getInstance().getLife_story_lines_color());
+        }
+        if(Settings.getInstance().isFamily_sotry_lines()){
+            drawSinglePersonFamilyLines(googleMap,context,ClientModel.getCurrentPerson());
+        }
+        if(Settings.getInstance().isSpouse_lines()){
+            Person spouse = ClientModel.getInstance().people.get(ClientModel.getCurrentPerson().getSpouse());
+            Event one = getFirstEvent(ClientModel.getCurrentPerson());
+            Event two = getFirstEvent(spouse);
+            if(one != null && two != null){
+                drawLine(one,two,googleMap,context,getColor(Settings.getInstance().getSpouse_lines_color()));
+            }
+        }
+
     }
 }

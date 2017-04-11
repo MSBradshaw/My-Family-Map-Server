@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.joanzapata.android.iconify.IconDrawable;
 import com.joanzapata.android.iconify.Iconify;
 
@@ -151,7 +152,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         MapsInitializer.initialize(getContext());
 
         mGoogleMap = googleMap;
@@ -166,6 +167,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 Person person  = ClientModel.getInstance().people.get(event.getPersonID());
                 //sets the current person so that the PersonView can get the person info
                 ClientModel.getInstance().setCurrentPerson(person);
+                LineDrawer lineDrawer = new LineDrawer();
+                for(int i =0; i < lineDrawer.lines.size() ;i++){
+                    lineDrawer.lines.get(i).remove();
+                }
+                lineDrawer.drawSinglePersonStuff(mGoogleMap,getContext());
                 String name = person.getFirstname() + " " + person.getLastname();
                 String eventStr = event.getDescription() + ": " + event.getCity() +
                         ", " + event.getCountry() + " (" + event.getYear() + ")";
@@ -251,17 +257,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                     .position(new LatLng(latitude, longitude))
                     .title(eventID));
         }
-        LineDrawer lineDrawer = new LineDrawer();
-        //adds lines based on what they settings say to
-        if(Settings.getInstance().isFamily_sotry_lines()){
-            lineDrawer.drawFamilyLines(googleMap,getContext());
-        }
-        if(Settings.getInstance().isLife_story_lines()){
-            lineDrawer.drawLifeLines(googleMap,getContext());
-        }
-        if(Settings.getInstance().isSpouse_lines()){
-            lineDrawer.drawSpouseLines(googleMap,getContext());
-        }
+
     }
     private void changeFooterInfo(String name, String info){
         TextView personName = (TextView) mView.findViewById(R.id.person_name);

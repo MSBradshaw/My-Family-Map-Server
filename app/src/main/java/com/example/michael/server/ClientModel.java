@@ -96,6 +96,7 @@ public class ClientModel {
         Integer color = 0;
         initializePossibleColors();
         for(String event : eventTypes){
+            color = color + 40;
             ClientModel.getInstance().eventTypeAndColor.put(event,color.toString());
 
         }
@@ -308,25 +309,25 @@ public class ClientModel {
         return searchEvents;
     }
     private boolean personContains(Person person, String word){
-        if(person.getFirstname().contains(word)){
+        if(person.getFirstname().toLowerCase().contains(word)){
             return true;
         }
-        if(person.getLastname().contains(word)){
+        if(person.getLastname().toLowerCase().contains(word)){
             return true;
         }
         return false;
     }
     private boolean eventContain(Event event, String word){
-        if(event.getDescription().contains(word)){
+        if(event.getDescription().toLowerCase().contains(word)){
             return true;
         }
-        if(event.getCountry().contains(word)){
+        if(event.getCountry().toLowerCase().contains(word)){
             return true;
         }
-        if(event.getCity().contains(word)){
+        if(event.getCity().toLowerCase().contains(word)){
             return true;
         }
-        if(event.getYear().contains(word)){
+        if(event.getYear().toLowerCase().contains(word)){
             return true;
         }
         return false;

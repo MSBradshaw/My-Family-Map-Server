@@ -122,6 +122,10 @@ public class SettingsActivity extends AppCompatActivity {
                 try{
                     loginFragment.syncTask.resync = true;
                     loginFragment.syncTask.execute(new URL(ServerProxy.url));
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP |
+                            Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    getBaseContext().startActivity(intent);
                 }catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

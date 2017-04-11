@@ -73,14 +73,14 @@ public class SearchActivity extends AppCompatActivity {
                     return;
                 }
                 //run the search functions and have them return two lists people and events
-                events = ClientModel.getInstance().searchEvents(searchString);
+                events = ClientModel.getInstance().searchEvents(searchString.toLowerCase());
                 //apply the events to a recycler view
                 RecyclerView eventsRecycler = (RecyclerView) findViewById(R.id.search_events);
                 EventAdapter eventAdapter = new EventAdapter(events,getBaseContext());
                 eventsRecycler.setAdapter(eventAdapter);
                 eventsRecycler.setLayoutManager(new LinearLayoutManager(getBaseContext()));
 
-                people = ClientModel.getInstance().searchPeople(searchString);
+                people = ClientModel.getInstance().searchPeople(searchString.toLowerCase());
                 RecyclerView personRecycler = (RecyclerView) findViewById(R.id.search_people);
                 FamilyAdapter personAdapter = new FamilyAdapter(people,getBaseContext());
                 personRecycler.setAdapter(personAdapter);
